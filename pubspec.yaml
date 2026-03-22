@@ -1,0 +1,35 @@
+name: darwin_walk
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pedometer: ^4.2.0
+  pedometer_2: ^5.0.4
+  sqflite: ^2.3.0
+  path_provider: ^2.1.5
+  cupertino_icons: ^1.0.8
+  path: ^1.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/jurassic.json
+    - assets/data/whale.json
+    - assets/data/cenozoic.json
+    - assets/images/
+    - assets/images/routes/
+    - assets/images/jurassic/
+    - assets/images/whales/
+    - assets/images/cenozoic/

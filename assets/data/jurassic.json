@@ -1,0 +1,216 @@
+{
+    "period": "Jurassic",
+    "start_mya": 200,
+    "end_mya": 145,
+    "total_steps": 49500,
+    "nodes": [
+      {
+        "species": "Morganucodon",
+        "time_mya": -200,
+        "cumulative_steps": 0,
+        "funfact": "По зубам и износу эмали видно, что он был активным насекомоядным и любил твёрдую добычу вроде жуков.",
+        "text": "Morganucodon был крошечным зверьком длиной около 10 см и массой в несколько десятков граммов, внешне очень напоминающим современную землеройку или мышь. Это одно из первых животных с «настоящим» млекопитающим челюстным суставом: кости нижней челюсти уже частично освобождаются и начинают превращаться в элементы среднего уха. Геологический возраст: поздний триас — ранняя юра. Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Morganucodon.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Ichthyosaurus",
+        "time_mya": -199,
+        "cumulative_steps": 900,
+        "funfact": "Они не откладывали яйца на берегу, как черепахи, а рожали живых детенышей прямо в воде.",
+        "text": "Геологический возраст: ранняя юра (геттангский–тоарский). Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Ichthyosaurus.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Coelophysis",
+        "time_mya": -196,
+        "cumulative_steps": 3600,
+        "funfact": "Один из первых динозавров в космосе: череп целофизиса летал на шаттле «Индевор» в 1998 году.",
+        "text": "Геологический возраст: раннеюрские формы известны (>195 млн лет назад).",
+        "image_url": "assets/images/jurassic/Coelophysis.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Dilophosaurus",
+        "time_mya": -193,
+        "cumulative_steps": 6300,
+        "funfact": "В реальности у него не было капюшона и яда, как в кино, зато гребни были ярко окрашены.",
+        "text": "Геологический возраст: ранняя юра (синемюрский ярус). Уровень уверенности: средний.",
+        "image_url": "assets/images/jurassic/Dilophosaurus.png",
+        "background": "RainBackground"
+      },
+      {
+        "species": "Scelidosaurus",
+        "time_mya": -191,
+        "cumulative_steps": 8100,
+        "funfact": "«Дедушка» всех бронированных динозавров. Первый полный скелет динозавра в истории науки.",
+        "text": "Геологический возраст: ранняя юра (синемюр–плиенсбах). Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Scelidosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Temnodontosaurus",
+        "time_mya": -190,
+        "cumulative_steps": 9000,
+        "funfact": "Его глаза были размером с обеденную тарелку (до 20 см), чтобы видеть добычу в глубокой тьме.",
+        "text": "Геологический возраст: ранняя юра. Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Temnodontosaurus.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Plesiosaurus",
+        "time_mya": -183,
+        "cumulative_steps": 15300,
+        "funfact": "Он плавал, взмахивая четырьмя ластами, словно летел под водой (как пингвин).",
+        "text": "Геологический возраст: ранняя юра (тоарский ярус). Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Plesiosaurus.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Eurhinosaurus",
+        "time_mya": -181,
+        "cumulative_steps": 17000,
+        "funfact": "Морской ящер, похожий на рыбу-пилу: его верхняя челюсть была в два раза длиннее нижней и усеяна острыми зубами.",
+        "text": "Геологический возраст: ранняя юра (тоарский ярус), 180 млн лет назад. Уровень уверенности: высокий (Европа).",
+        "image_url": "assets/images/jurassic/Eurhinosaurus.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Tazoudasaurus",
+        "time_mya": -179,
+        "cumulative_steps": 18000,
+        "funfact": "Один из древнейших «настоящих» гигантов-завропод. Хотя он был небольшим (9 метров), его ноги уже превратились в колонны.",
+        "text": "Геологический возраст: ранняя юра (тоарский ярус), 180 млн лет назад. Уровень уверенности: высокий (Марокко).",
+        "image_url": "assets/images/jurassic/Tazoudasaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Steneosaurus",
+        "time_mya": -174,
+        "cumulative_steps": 23400,
+        "funfact": "Древний морской крокодил, который выглядел точь-в-точь как современный гавиал, но жил в открытом море.",
+        "text": "Геологический возраст: средняя юра (ааленский–батский ярусы), 174–166 млн лет назад. Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Steneosaurus.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Megalosaurus",
+        "time_mya": -166,
+        "cumulative_steps": 30600,
+        "funfact": "Первый динозавр, получивший научное имя (в 1824 году). Сначала его кости считали останками гигантов.",
+        "text": "Геологический возраст: средняя юра (батский ярус). Уровень уверенности: средний.",
+        "image_url": "assets/images/jurassic/Megalosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Castorocauda",
+        "time_mya": -164,
+        "cumulative_steps": 32400,
+        "funfact": "«Юрский бобр» с мехом и плоским хвостом, доказывающий, что звери рано освоили воду.",
+        "text": "Геологический возраст: средняя юра (келловей). Уровень уверенности: высокий.",
+        "image_url": "assets/images/jurassic/Castorocauda.png",
+        "background": "RainBackground"
+      },
+      {
+        "species": "Liopleurodon",
+        "time_mya": -160,
+        "cumulative_steps": 36000,
+        "funfact": "У него было «стерео-обоняние» под водой благодаря раздвоенным ноздрям.",
+        "text": "Геологический возраст: средняя–поздняя юра (келловей–оксфорд). Уровень уверенности: средний.",
+        "image_url": "assets/images/jurassic/Liopleurodon.png",
+        "background": "BubblesBackground"
+      },
+      {
+        "species": "Juramaia",
+        "time_mya": -159,
+        "cumulative_steps": 36900,
+        "funfact": "«Юрская мать»: древнейший известный предок плацентарных млекопитающих.",
+        "text": "Геологический возраст: оксфордский ярус. Сдвинут на 1 млн лет для игровой последовательности.",
+        "image_url": "assets/images/jurassic/Juramaia.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Allosaurus",
+        "time_mya": -155,
+        "cumulative_steps": 40500,
+        "funfact": "Мог раскрывать пасть на 92 градуса, чтобы наносить рубящие удары верхней челюстью.",
+        "text": "Геологический возраст: поздняя юра (киммеридж). Уровень уверенности: очень высокий.",
+        "image_url": "assets/images/jurassic/Allosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Camarasaurus",
+        "time_mya": -154,
+        "cumulative_steps": 41400,
+        "funfact": "Самый распространенный гигант своей эпохи. Его зубы напоминали ложки для жесткой хвои.",
+        "text": "Геологический возраст: поздняя юра. Сдвинут относительно Аллозавра.",
+        "image_url": "assets/images/jurassic/Camarasaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Brachiosaurus",
+        "time_mya": -153,
+        "cumulative_steps": 42300,
+        "funfact": "Ноздри на макушке служили, возможно, для охлаждения мозга, а не для дыхания под водой.",
+        "text": "Геологический возраст: поздняя юра. Уровень уверенности: средний.",
+        "image_url": "assets/images/jurassic/Brachiosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Diplodocus",
+        "time_mya": -152,
+        "cumulative_steps": 43200,
+        "funfact": "Кончик его хвоста мог двигаться со сверхзвуковой скоростью, щелкая как кнут.",
+        "text": "Геологический возраст: поздняя юра (титон).",
+        "image_url": "assets/images/jurassic/Diplodocus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Stegosaurus",
+        "time_mya": -151,
+        "cumulative_steps": 44100,
+        "funfact": "Мозг весил 80 грамм, зато шипы на хвосте пробивали кости хищников насквозь.",
+        "text": "Геологический возраст: поздняя юра.",
+        "image_url": "assets/images/jurassic/Stegosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Archaeopteryx",
+        "time_mya": -150,
+        "cumulative_steps": 45000,
+        "funfact": "Полу-птица, полу-рептилия: перья для полета, но зубастая пасть и длинный хвост.",
+        "text": "Геологический возраст: поздняя юра (титон). Зольнхофен.",
+        "image_url": "assets/images/jurassic/Archaeopteryx.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Pterodactylus",
+        "time_mya": -149,
+        "cumulative_steps": 45900,
+        "funfact": "Был не лысым монстром, а пушистым летуном, покрытым пикнофибрами (шерсткой).",
+        "text": "Геологический возраст: поздняя юра (титон). Сдвинут чуть ближе к концу периода для баланса.",
+        "image_url": "assets/images/jurassic/Pterodactylus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Apatosaurus",
+        "time_mya": -148,
+        "cumulative_steps": 46800,
+        "funfact": "В 2015 году ученые доказали, что он и Бронтозавр — это разные животные, вернув Бронтозавру его имя.",
+        "text": "Геологический возраст: поздняя юра. Сдвинут для разделения с Диплодоком.",
+        "image_url": "assets/images/jurassic/Apatosaurus.png",
+        "background": "ForestLeavesBackground"
+      },
+      {
+        "species": "Компсогнат",
+        "time_mya": -145,
+        "cumulative_steps": 49500,
+        "funfact": "Элегантный хищник размером с курицу, живший на самом закате Юрского периода.",
+        "text": "Геологический возраст: самый конец юры (титон), граница с мелом.",
+        "image_url": "assets/images/jurassic/Compsognathus.png",
+        "background": "ForestLeavesBackground"
+      }
+    ]
+  }
+  
