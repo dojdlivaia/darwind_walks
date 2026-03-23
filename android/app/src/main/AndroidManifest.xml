@@ -2,6 +2,7 @@
 
     <!-- Разрешение на счётчик шагов / физическую активность (Android 10+) -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:label="darwin_walk"

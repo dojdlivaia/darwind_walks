@@ -11,7 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
   pedometer: ^4.2.0
-  pedometer_2: ^5.0.4
+  #pedometer_2: ^5.0.4
+  permission_handler: ^11.3.0
+  shared_preferences: ^2.2.2
   sqflite: ^2.3.0
   path_provider: ^2.1.5
   cupertino_icons: ^1.0.8
