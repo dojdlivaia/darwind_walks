@@ -34,7 +34,7 @@ Future<void> _requestPermissions() async {
 
     // Для iOS (если понадобится доступ к другим сенсорам)
     final sensorsStatus = await Permission.sensors.request();
-    debugPrint('🔐 Permission.sensors: $sensorsStatus');
+    debugPrint('🔐 Permission.sensors: $sensorsStatus'); 
 
     // Проверка для отладки
     if (!activityStatus.isGranted) {

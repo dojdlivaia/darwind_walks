@@ -1,5 +1,6 @@
 // lib/screens/evolution_route_screen.dart
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,19 +19,14 @@ class EvolutionRouteScreen<TNode> extends StatefulWidget {
     required this.decodeData,
     this.showBottomIcons = true,
     this.backgroundColors,
+    this.initialSteps = 0, // 🔹 Новый параметр
   });
 
   final EvolutionRouteConfig<TNode> config;
-
-  /// Функция, которая из jsonMap делает (nodes, totalSteps).
   final (List<TNode>, int) Function(Map<String, dynamic> jsonMap) decodeData;
-
-  /// Показать ли три иконки внизу (домик/профиль/инфо) — для Whale/Cenozoic.
   final bool showBottomIcons;
-
-  /// Цвета для "дышащего" градиента фона.
-  /// Если null — градиент не используется.
   final List<Color>? backgroundColors;
+  final int initialSteps; // 🔹 Начальные шаги (из репозитория)
 
   @override
   State<EvolutionRouteScreen<TNode>> createState() =>
@@ -48,11 +44,48 @@ class _EvolutionRouteScreenState<TNode>
 
   int _userSteps = 0;
   TNode? _selectedNode;
+  
+  // 🔹 Подписка на изменения в репозитории (опционально)
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
+    _userSteps = widget.initialSteps;
     _loadData();
+    
+    // 🔹 Периодически обновляем шаги из репозитория (каждые 5 секунд)
+    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _syncStepsFromRepository();
+    });
+  }
+
+  @override
+  void didUpdateWidget(EvolutionRouteScreen<TNode> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 🔹 Если изменились initialSteps — обновляем
+    if (widget.initialSteps != oldWidget.initialSteps) {
+      setState(() {
+        _userSteps = widget.initialSteps;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
+  }
+
+  /// 🔹 Синхронизация с репозиторием
+  Future<void> _syncStepsFromRepository() async {
+    final today = DateTime.now();
+    final stat = await dailyStepsRepository.getForDate(today);
+    if (stat != null && mounted) {
+      setState(() {
+        _userSteps = stat.totalSteps;
+      });
+    }
   }
 
   Future<void> _loadData() async {
@@ -60,8 +93,7 @@ class _EvolutionRouteScreenState<TNode>
       final jsonString = await rootBundle.loadString(
         widget.config.jsonAssetPath,
       );
-      final jsonMap =
-          json.decode(jsonString) as Map<String, dynamic>;
+      final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
       final (nodes, totalSteps) = widget.decodeData(jsonMap);
 
       setState(() {
@@ -70,8 +102,11 @@ class _EvolutionRouteScreenState<TNode>
         _selectedNode = nodes.isNotEmpty ? nodes.first : null;
         _isLoading = false;
       });
+      
+      // После загрузки данных синхронизируем шаги
+      await _syncStepsFromRepository();
     } catch (e) {
-      debugPrint('Error loading route data: $e');
+      debugPrint('Error loading route  $e');
       setState(() => _isLoading = false);
     }
   }
@@ -135,6 +170,13 @@ class _EvolutionRouteScreenState<TNode>
         });
       }
     });
+    
+    // 🔹 Сохраняем тестовые шаги в репозиторий
+    dailyStepsRepository.addSteps(
+      date: DateTime.now(),
+      stepsDelta: 500,
+      routeId: widget.config.id,
+    );
   }
 
   @override
@@ -195,7 +237,6 @@ class _EvolutionRouteScreenState<TNode>
       body: SafeArea(
         child: Column(
           children: [
-            // Верх
             Expanded(
               flex: 5,
               child: Stack(
@@ -265,8 +306,6 @@ class _EvolutionRouteScreenState<TNode>
                 ],
               ),
             ),
-
-            // Низ: карточка как в Jurassic
             Expanded(
               flex: 6,
               child: Stack(
@@ -281,7 +320,6 @@ class _EvolutionRouteScreenState<TNode>
                     ),
                     child: Column(
                       children: [
-                        // Область прокрутки текста
                         Expanded(
                           child: SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
@@ -317,8 +355,6 @@ class _EvolutionRouteScreenState<TNode>
                             ),
                           ),
                         ),
-
-                        // Фиксированная нижняя часть с прогресс‑баром и иконками
                         Container(
                           padding:
                               const EdgeInsets.fromLTRB(24, 16, 24, 16),
@@ -383,8 +419,6 @@ class _EvolutionRouteScreenState<TNode>
                       ],
                     ),
                   ),
-
-                  // Заголовок поверх карточки
                   IgnorePointer(
                     child: Container(
                       height: 80,

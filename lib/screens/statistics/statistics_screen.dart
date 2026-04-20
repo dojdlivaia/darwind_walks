@@ -1,6 +1,7 @@
 // lib/screens/statistics/statistics_screen.dart
 
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 import '../../data/daily_steps_repository.dart';
 import 'stat_range.dart';
@@ -26,6 +27,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   PeriodSummary? _summary;
   bool _isLoading = true;
   String? _errorText;
+
+  // 🎨 Цветовая палитра
+  static const Color _primaryGreen = Color(0xFF4B5E09);
+  static const Color _backgroundDark = Color(0xFF061B14);
+  static const Color _accentLight = Color(0xFFEEF8CC);
+  static const Color _secondaryDark = Color(0xFF2E3A05);
+  static const Color _textWhite = Colors.white;
 
   @override
   void initState() {
@@ -134,6 +142,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             start: DateTime(now.year, now.month, now.day - 6),
             end: DateTime(now.year, now.month, now.day),
           ),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: _primaryGreen,
+              onPrimary: _textWhite,
+              surface: _secondaryDark,
+              onSurface: _textWhite,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (result == null) return;
 
@@ -156,66 +177,77 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final summary = _summary;
-
     return Scaffold(
+      backgroundColor: _backgroundDark,
       appBar: AppBar(
-        title: const Text('Статистика шагов'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () async {
-              final now = DateTime.now();
-              await widget.repository.addSteps(
-                date: now,
-                stepsDelta: 100,
-                routeId: 'test_button',
-              );
-              await _loadStats();
-            },
+        backgroundColor: _secondaryDark,
+        elevation: 0,
+        title: Text(
+          '📊 Статистика',
+          style: TextStyle(
+            color: _textWhite,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
-        ],
+        ),
+        centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                color: _primaryGreen,
+                backgroundColor: _secondaryDark,
+              ),
+            )
           : _errorText != null
-              ? Center(child: Text(_errorText!))
+              ? Center(
+                  child: Text(
+                    _errorText!,
+                    style: TextStyle(color: _accentLight),
+                    textAlign: TextAlign.center,
+                  ),
+                )
               : Column(
                   children: [
                     _buildRangeSelector(),
-                    if (summary != null) _buildSummaryRow(summary),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: _buildChartPlaceholder(),
-                    ),
-                    const SizedBox(height: 8),
+                    if (_summary != null) _buildSummaryCards(_summary!),
+                    const SizedBox(height: 12),
+                    Expanded(child: _buildChart()),
                   ],
                 ),
     );
   }
 
+  // 🎯 Селектор диапазона с новой стилизацией
   Widget _buildRangeSelector() {
-    return Padding(
-      padding: const EdgeInsets.all(12.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: _secondaryDark,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _rangeChip('День', StatsRange.day),
           _rangeChip('Неделя', StatsRange.week),
           _rangeChip('Месяц', StatsRange.month),
           GestureDetector(
             onTap: _pickCustomRange,
-            child: Chip(
-              label: Text(
-                _customRange == null ? 'Диапазон' : 'Диапазон ✓',
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _range == StatsRange.custom ? _primaryGreen : _accentLight.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _range == StatsRange.custom ? _accentLight : _primaryGreen,
+                  width: 1.5,
+                ),
               ),
-              backgroundColor: _range == StatsRange.custom
-                  ? Colors.black87
-                  : Colors.grey.shade200,
-              labelStyle: TextStyle(
-                color: _range == StatsRange.custom
-                    ? Colors.white
-                    : Colors.black87,
+              child: Text(
+                _customRange == null ? '📅 Диапазон' : '✓',
+                style: TextStyle(
+                  color: _textWhite,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ),
           ),
@@ -226,77 +258,262 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Widget _rangeChip(String label, StatsRange value) {
     final isSelected = _range == value;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) => _onRangeChanged(value),
+    return GestureDetector(
+      onTap: () => _onRangeChanged(value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? _primaryGreen : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? _accentLight : _accentLight.withOpacity(0.4),
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? _textWhite : _accentLight,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            fontSize: 13,
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildSummaryRow(PeriodSummary summary) {
+  // 📈 Карточки с итоговой статистикой
+  Widget _buildSummaryCards(PeriodSummary summary) {
     final bestDayStr = summary.bestDayDate != null
         ? '${summary.bestDayDate!.day}.${summary.bestDayDate!.month}'
         : '–';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _summaryItem('Всего', summary.totalSteps.toString()),
-          _summaryItem(
-            'В день',
-            summary.averagePerDay.toStringAsFixed(0),
-          ),
-          _summaryItem('Рекорд', '${summary.bestDaySteps}\n$bestDayStr'),
+          _expandedSummaryCard('👣 Всего', summary.totalSteps.toString(), _primaryGreen),
+          const SizedBox(width: 10),
+          _expandedSummaryCard('📅 В день', summary.averagePerDay.toStringAsFixed(0), _secondaryDark),
+          const SizedBox(width: 10),
+          _expandedSummaryCard('🏆 Рекорд', '${summary.bestDaySteps}\n$bestDayStr', _accentLight.withOpacity(0.3)),
         ],
       ),
     );
   }
 
-  Widget _summaryItem(String label, String value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
+  Widget _expandedSummaryCard(String label, String value, Color accentColor) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              accentColor.withOpacity(0.4),
+              accentColor.withOpacity(0.1),
+            ],
           ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: accentColor.withOpacity(0.6), width: 1),
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                height: 1.1,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: _accentLight.withOpacity(0.9),
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 📊 Визуальный график шагов
+  Widget _buildChart() {
+    if (_points.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.show_chart,
+              size: 64,
+              color: _accentLight.withOpacity(0.4),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Нет данных для периода',
+              style: TextStyle(
+                color: _accentLight.withOpacity(0.7),
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        // 📈 Мини-график (бар-чарт)
+        Expanded(
+          flex: 3,
+          child: _buildBarChart(),
+        ),
+        // 📋 Список дней
+        Expanded(
+          flex: 2,
+          child: _buildStepsList(),
         ),
       ],
     );
   }
 
-  Widget _buildChartPlaceholder() {
-    if (_points.isEmpty) {
-      return const Center(
-        child: Text('Нет данных для выбранного периода'),
-      );
-    }
+  // 📊 Горизонтальный бар-чарт
+  Widget _buildBarChart() {
+    if (_points.isEmpty) return const SizedBox();
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: _points.length,
-      itemBuilder: (context, index) {
-        final p = _points[index];
-        return ListTile(
-          dense: true,
-          title: Text(
-            '${p.date.day}.${p.date.month}.${p.date.year}',
-          ),
-          trailing: Text('${p.totalSteps} шагов'),
-        );
-      },
+    final maxSteps = _points.map((p) => p.totalSteps).reduce(math.max).toDouble();
+    final barWidth = (MediaQuery.of(context).size.width - 40) / _points.length - 4;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: _points.map((point) {
+          final height = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0;
+          final dayLabel = '${point.date.day}.${point.date.month}';
+          
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Бар
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: math.max(barWidth, 8),
+                height: math.max(height * 100, 4),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      _primaryGreen,
+                      _primaryGreen.withOpacity(0.7),
+                      _accentLight.withOpacity(0.8),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _primaryGreen.withOpacity(0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 6),
+              // Подпись дня
+              Text(
+                dayLabel,
+                style: TextStyle(
+                  color: _accentLight.withOpacity(0.7),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // 📋 Список дней с шагами
+  Widget _buildStepsList() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _secondaryDark.withOpacity(0.5),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        itemCount: _points.length,
+        separatorBuilder: (_, __) => Divider(color: _accentLight.withOpacity(0.1), height: 1),
+        itemBuilder: (context, index) {
+          final p = _points[index];
+          final dayName = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][p.date.weekday - 1];
+          final dateStr = '${p.date.day}.${p.date.month}';
+          
+          return ListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            leading: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: _primaryGreen.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Text(
+                  dayName,
+                  style: TextStyle(
+                    color: _accentLight,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            title: Text(
+              dateStr,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+            trailing: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: _accentLight.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _accentLight.withOpacity(0.3)),
+              ),
+              child: Text(
+                '${p.totalSteps}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
