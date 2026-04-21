@@ -16,6 +16,7 @@ import '../widgets/final_creature_intro.dart';
 import '../widgets/simple_confetti.dart';
 import '../widgets/bottom_bar.dart';
 import '../widgets/breathing_gradient_background.dart';
+import '../widgets/creature_blueprint.dart'; // 🔹 ИМПОРТ ВИДЖЕТА
 import 'jurassic_vertical_timeline_screen.dart';
 import '../main.dart';
 
@@ -139,6 +140,29 @@ class _JurassicScreenState extends State<JurassicScreen> {
     });
   }
 
+  // 🔹 МЕТОД: Показать чертёж животного
+  void _showBlueprint(JurassicNode node) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: CreatureBlueprint(
+            node: node,
+            onClose: () => Navigator.pop(context),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildLockedImage(Widget image) {
     return ColorFiltered(
       colorFilter: const ColorFilter.mode(Color(0xFF27301F), BlendMode.srcATop),
@@ -149,7 +173,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
   Widget _buildSizedImage(String imageUrl, bool isUnlocked) {
     return Image.asset(
       imageUrl,
-      width: 600,    // 🔹 УВЕЛИЧЕНО с 400 до 600
+      width: 600,
       height: 600,
       fit: BoxFit.contain,
       key: ValueKey('img_${imageUrl}_$isUnlocked'),
@@ -167,30 +191,33 @@ class _JurassicScreenState extends State<JurassicScreen> {
     final bool isUnlocked = _isNodeUnlocked(node);
     final baseImage = _buildSizedImage(node.imageUrl, isUnlocked);
 
-    if (node.species == 'Компсогнат') {
-      if (!isUnlocked) return _buildLockedImage(baseImage);
+    // 🔹 Оборачиваем в GestureDetector для открытия чертежа
+    final creatureWidget = node.species == 'Компсогнат'
+        ? FinalCreatureIntro(
+            play: !_hasReachedFinal,
+            child: BouncingCreature(
+              amplitude: 14,
+              duration: const Duration(seconds: 4),
+              shadowOffset: 45,
+              showShadow: true,
+              child: baseImage,
+            ),
+          )
+        : BouncingCreature(
+            amplitude: 12,
+            duration: const Duration(seconds: 4),
+            shadowOffset: 40,
+            showShadow: true,
+            child: baseImage,
+          );
 
-      return FinalCreatureIntro(
-        play: !_hasReachedFinal,
-        child: BouncingCreature(
-          amplitude: 14,
-          duration: const Duration(seconds: 4),
-          shadowOffset: 45,
-          showShadow: true,
-          child: baseImage,
-        ),
-      );
-    }
-
-    if (!isUnlocked) return _buildLockedImage(baseImage);
-
-    return BouncingCreature(
-      amplitude: 12,
-      duration: const Duration(seconds: 4),
-      shadowOffset: 40,
-      showShadow: true,
-      child: baseImage,
-    );
+    return isUnlocked
+        ? GestureDetector(
+            onTap: () => _showBlueprint(node),
+            behavior: HitTestBehavior.opaque,
+            child: creatureWidget,
+          )
+        : _buildLockedImage(baseImage);
   }
 
   Widget _buildBackground(JurassicNode node) {
@@ -277,7 +304,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
                     Align(
                       alignment: Alignment.center,
                       child: Padding(
-                        // 🔹 УМЕНЬШЕНО с 32 до 16 чтобы дать больше места картинке
                         padding: const EdgeInsets.all(16.0),
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),

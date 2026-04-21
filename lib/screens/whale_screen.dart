@@ -6,6 +6,7 @@ import '../models/whale.dart';
 import 'evolution_route_screen.dart';
 import '../routes/whale_route_config.dart';
 import '../services/current_route_manager.dart';
+import '../widgets/creature_blueprint.dart'; // 🔹 Добавлен импорт
 
 class WhaleScreen extends StatelessWidget {
   const WhaleScreen({super.key});
@@ -37,7 +38,6 @@ class WhaleScreen extends StatelessWidget {
           decodeData: _decodeWhaleData,
           showBottomIcons: false,
           backgroundColors: _backgroundColors,
-          // initialSteps по умолчанию 0, но EvolutionRouteScreen сам загрузит из репозитория
         ),
       ),
     );

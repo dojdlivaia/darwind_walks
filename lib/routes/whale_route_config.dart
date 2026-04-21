@@ -27,7 +27,6 @@ EvolutionRouteConfig<WhaleNode> buildWhaleRouteConfig() {
 
     if (isUnlocked) return image;
 
-    // Силуэт для закрытого узла
     return ColorFiltered(
       colorFilter: const ColorFilter.mode(
         Color.fromARGB(255, 30, 49, 52),
@@ -41,24 +40,19 @@ EvolutionRouteConfig<WhaleNode> buildWhaleRouteConfig() {
     id: 'whale',
     jsonAssetPath: 'assets/data/whale.json',
 
-    // Мапперы данных
     cumulativeStepsOf: (n) => n.cumulativeSteps,
     speciesOf: (n) => n.species,
     funFactOf: (n) => n.funfact,
     textOf: (n) => n.text,
 
-    // Финальный узел — голубой кит
     isFinalNode: (node, nodes) =>
         node.species == 'Голубой кит' || node.species == 'Blue Whale',
 
-    // Фоновая анимация (пузыри)
     buildBackground: (_) => const BubblesBackground(bubblesCount: 17),
 
-    // Существо + анимации
     buildCreature: (node, isUnlocked, hasReachedFinal) {
       final baseImage = buildBaseImage(node, isUnlocked);
 
-      // Голубой кит – финальная анимация только когда открыт
       if (node.species == 'Blue Whale' || node.species == 'Голубой кит') {
         if (!isUnlocked) return baseImage;
 
@@ -72,7 +66,6 @@ EvolutionRouteConfig<WhaleNode> buildWhaleRouteConfig() {
         );
       }
 
-      // Остальные – покачивание только когда открыты
       if (!isUnlocked) return baseImage;
 
       return BouncingCreature(
@@ -82,7 +75,6 @@ EvolutionRouteConfig<WhaleNode> buildWhaleRouteConfig() {
       );
     },
 
-    // Прогресс‑бар маршрута
     buildProgressBar: ({
       required int currentSteps,
       required int totalSteps,
@@ -97,12 +89,15 @@ EvolutionRouteConfig<WhaleNode> buildWhaleRouteConfig() {
       );
     },
 
-    // Кнопка карты/таймлайна
     onOpenTimeline: (context, nodes, userSteps) {
+      final totalSteps = nodes.isNotEmpty ? nodes.last.cumulativeSteps : 30000;
+      
       final data = WhaleData(
-        theme: '', // можно подставить реальные значения, если нужны в таймлайне
-        title: 'Эволюция китов',
-        totalSteps: nodes.isNotEmpty ? nodes.last.cumulativeSteps : 0,
+        theme: 'Whale Evolution',
+        title: 'Назад в океан: Как олень стал китом',
+        startMya: 50,
+        endMya: 0,
+        totalSteps: totalSteps,
         nodes: nodes,
       );
 
