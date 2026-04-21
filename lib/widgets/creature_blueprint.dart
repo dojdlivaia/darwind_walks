@@ -5,15 +5,15 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-import '../models/jurassic.dart';
+import '../models/creature_info.dart';
 
 class CreatureBlueprint extends StatefulWidget {
-  final JurassicNode node;
+  final CreatureInfo creature;
   final VoidCallback? onClose;
 
   const CreatureBlueprint({
     super.key,
-    required this.node,
+    required this.creature,
     this.onClose,
   });
 
@@ -32,7 +32,6 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
   double _imageWidth = 0;
   double _imageHeight = 0;
 
-  // 🎨 Цветовая палитра
   static const Color _bgDark = Color(0xFF061B14);
   static const Color _bgMedium = Color(0xFF2E3A05);
   static const Color _accent = Color(0xFF4B5E09);
@@ -88,7 +87,6 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
     super.dispose();
   }
 
-  // 🔹 Вспомогательный метод для безопасной прозрачности
   double _safeOpacity(double value) => value.clamp(0.0, 1.0);
 
   @override
@@ -121,7 +119,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                         opacity: _safeOpacity(_filmLoadAnim.value),
                         duration: const Duration(milliseconds: 300),
                         child: Text(
-                          widget.node.species.toUpperCase(),
+                          widget.creature.species.toUpperCase(),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -144,7 +142,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                                 sigmaY: 1.5 * (1 - _safeOpacity(_filmLoadAnim.value)),
                               ),
                               child: Image.asset(
-                                widget.node.imageUrl,
+                                widget.creature.imageUrl,
                                 key: _imageKey,
                                 fit: BoxFit.contain,
                                 color: _textBright.withOpacity(
@@ -167,7 +165,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                                 size: Size(_imageWidth, _imageHeight),
                                 painter: _BlueprintArrowsPainter(
                                   progress: _safeOpacity(_arrowsAnim.value),
-                                  node: widget.node,
+                                  creature: widget.creature,
                                   imageWidth: _imageWidth,
                                   imageHeight: _imageHeight,
                                   textColor: _textBright,
@@ -196,16 +194,16 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _buildStatItem('Длина', widget.node.lengthText),
-                              if (widget.node.heightM != null) ...[
+                              _buildStatItem('Длина', widget.creature.lengthText),
+                              if (widget.creature.heightM != null) ...[
                                 const SizedBox(width: 16),
-                                _buildStatItem('Высота', widget.node.heightText),
+                                _buildStatItem('Высота', widget.creature.heightText),
                               ],
                               const SizedBox(width: 16),
-                              _buildStatItem('Вес', widget.node.weightText),
-                              if (widget.node.wingspanM != null) ...[
+                              _buildStatItem('Вес', widget.creature.weightText),
+                              if (widget.creature.wingspanM != null) ...[
                                 const SizedBox(width: 16),
-                                _buildStatItem('Размах', widget.node.wingspanText),
+                                _buildStatItem('Размах', widget.creature.wingspanText),
                               ],
                             ],
                           ),
@@ -251,7 +249,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
       children: [
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: _textBright,
@@ -280,7 +278,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
           size: Size.infinite,
           painter: _FilmGrainPainter(
             progress: _safeOpacity(_filmLoadAnim.value),
-            seed: widget.node.species.hashCode,
+            seed: widget.creature.species.hashCode,
             textColor: _textBright,
           ),
         ),
@@ -289,7 +287,6 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
   }
 }
 
-// 🔆 Художник для светящейся обводки
 class _GlowOutlinePainter extends CustomPainter {
   final double progress;
   final double glowIntensity;
@@ -308,7 +305,6 @@ class _GlowOutlinePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = math.min(size.width, size.height) / 2 * 0.95;
 
-    // 🔆 Внешнее свечение
     final glowPaint = Paint()
       ..shader = RadialGradient(
         center: Alignment.center,
@@ -323,7 +319,6 @@ class _GlowOutlinePainter extends CustomPainter {
 
     canvas.drawCircle(center, radius * (1 + 0.15 * glowIntensity), glowPaint);
 
-    // ✏️ Чёткая обводка
     final outlinePaint = Paint()
       ..color = glowColor.withOpacity(0.9)
       ..style = PaintingStyle.stroke
@@ -341,10 +336,9 @@ class _GlowOutlinePainter extends CustomPainter {
       old.progress != progress || old.glowIntensity != glowIntensity;
 }
 
-// 📐 Художник для анимированных выносок
 class _BlueprintArrowsPainter extends CustomPainter {
   final double progress;
-  final JurassicNode node;
+  final CreatureInfo creature;
   final double imageWidth;
   final double imageHeight;
   final Color textColor;
@@ -352,7 +346,7 @@ class _BlueprintArrowsPainter extends CustomPainter {
 
   _BlueprintArrowsPainter({
     required this.progress,
-    required this.node,
+    required this.creature,
     required this.imageWidth,
     required this.imageHeight,
     required this.textColor,
@@ -372,19 +366,19 @@ class _BlueprintArrowsPainter extends CustomPainter {
       canvas,
       start: Offset(size.width * 0.15, size.height + 8),
       end: Offset(size.width * 0.85, size.height + 8),
-      label: '${node.lengthText} длина',
+      label: '${creature.lengthText} длина',
       progress: progress,
       delay: 0.0,
       textPainter: textPainter,
       vertical: false,
     );
 
-    if (node.heightM != null && progress > 0.3) {
+    if (creature.heightM != null && progress > 0.3) {
       _drawDimensionArrow(
         canvas,
         start: Offset(-8, size.height * 0.2),
         end: Offset(-8, size.height * 0.8),
-        label: '${node.heightText} высота',
+        label: '${creature.heightText} высота',
         progress: progress,
         delay: 0.2,
         textPainter: textPainter,
@@ -392,12 +386,12 @@ class _BlueprintArrowsPainter extends CustomPainter {
       );
     }
 
-    if (node.wingspanM != null && progress > 0.5) {
+    if (creature.wingspanM != null && progress > 0.5) {
       _drawDimensionArrow(
         canvas,
         start: Offset(size.width * 0.2, -20),
         end: Offset(size.width * 0.8, -20),
-        label: '${node.wingspanText} размах',
+        label: '${creature.wingspanText} размах',
         progress: progress,
         delay: 0.4,
         textPainter: textPainter,
@@ -484,12 +478,11 @@ class _BlueprintArrowsPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _BlueprintArrowsPainter old) =>
       old.progress != progress ||
-      old.node != node ||
+      old.creature != creature ||
       old.imageWidth != imageWidth ||
       old.imageHeight != imageHeight;
 }
 
-// 🎞️ Художник для эффекта старой плёнки
 class _FilmGrainPainter extends CustomPainter {
   final double progress;
   final int seed;

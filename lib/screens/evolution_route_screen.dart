@@ -8,8 +8,12 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../routes/evolution_route_config.dart';
 import '../widgets/simple_confetti.dart';
 import '../widgets/breathing_gradient_background.dart';
-import '../main.dart'; // global dailyStepsRepository
+import '../widgets/creature_blueprint.dart';
+import '../models/creature_info.dart';
+import '../main.dart';
 import 'statistics/statistics_screen.dart';
+import '../models/whale.dart';
+import '../models/jurassic.dart';
 
 class EvolutionRouteScreen<TNode> extends StatefulWidget {
   const EvolutionRouteScreen({
@@ -21,15 +25,8 @@ class EvolutionRouteScreen<TNode> extends StatefulWidget {
   });
 
   final EvolutionRouteConfig<TNode> config;
-
-  /// Функция, которая из jsonMap делает (nodes, totalSteps).
-  final (List<TNode>, int) Function(Map<String, dynamic> jsonMap) decodeData;
-
-  /// Показать ли три иконки внизу (домик/профиль/инфо) — для Whale/Cenozoic.
+  final (List<TNode>, int) Function(Map<String, dynamic>) decodeData;
   final bool showBottomIcons;
-
-  /// Цвета для "дышащего" градиента фона.
-  /// Если null — градиент не используется.
   final List<Color>? backgroundColors;
 
   @override
@@ -60,8 +57,7 @@ class _EvolutionRouteScreenState<TNode>
       final jsonString = await rootBundle.loadString(
         widget.config.jsonAssetPath,
       );
-      final jsonMap =
-          json.decode(jsonString) as Map<String, dynamic>;
+      final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
       final (nodes, totalSteps) = widget.decodeData(jsonMap);
 
       setState(() {
@@ -137,6 +133,62 @@ class _EvolutionRouteScreenState<TNode>
     });
   }
 
+  void _showCreatureBlueprint(BuildContext context, TNode node) {
+    // Используем фабричные методы CreatureInfo
+    CreatureInfo creature;
+    
+    if (node is WhaleNode) {
+      creature = CreatureInfo(
+        species: node.species,
+        imageUrl: node.imageUrl,
+        lengthM: node.lengthM,
+        heightM: node.heightM,
+        weightKg: node.weightKg,
+        wingspanM: node.wingspanM,
+      );
+    } else if (node is JurassicNode) {
+      creature = CreatureInfo(
+        species: node.species,
+        imageUrl: node.imageUrl,
+        lengthM: node.lengthM,
+        heightM: node.heightM,
+        weightKg: node.weightKg,
+        wingspanM: node.wingspanM,
+      );
+    } else {
+      debugPrint('Unknown node type: ${node.runtimeType}');
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: CreatureBlueprint(
+            creature: creature,
+            onClose: () => Navigator.pop(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  double? _toDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value.toDouble();
+    if (value is double) return value;
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -195,7 +247,6 @@ class _EvolutionRouteScreenState<TNode>
       body: SafeArea(
         child: Column(
           children: [
-            // Верх
             Expanded(
               flex: 5,
               child: Stack(
@@ -211,10 +262,16 @@ class _EvolutionRouteScreenState<TNode>
                       padding: const EdgeInsets.all(32.0),
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 500),
-                        child: widget.config.buildCreature(
-                          node,
-                          _isNodeUnlocked(node),
-                          _hasReachedFinal,
+                        child: GestureDetector(
+                          onTap: _isNodeUnlocked(node)
+                              ? () => _showCreatureBlueprint(context, node)
+                              : null,
+                          behavior: HitTestBehavior.opaque,
+                          child: widget.config.buildCreature(
+                            node,
+                            _isNodeUnlocked(node),
+                            _hasReachedFinal,
+                          ),
                         ),
                       ),
                     ),
@@ -265,8 +322,6 @@ class _EvolutionRouteScreenState<TNode>
                 ],
               ),
             ),
-
-            // Низ: карточка как в Jurassic
             Expanded(
               flex: 6,
               child: Stack(
@@ -281,7 +336,6 @@ class _EvolutionRouteScreenState<TNode>
                     ),
                     child: Column(
                       children: [
-                        // Область прокрутки текста
                         Expanded(
                           child: SingleChildScrollView(
                             physics: const BouncingScrollPhysics(),
@@ -317,8 +371,6 @@ class _EvolutionRouteScreenState<TNode>
                             ),
                           ),
                         ),
-
-                        // Фиксированная нижняя часть с прогресс‑баром и иконками
                         Container(
                           padding:
                               const EdgeInsets.fromLTRB(24, 16, 24, 16),
@@ -355,7 +407,6 @@ class _EvolutionRouteScreenState<TNode>
                                         color: Colors.black87,
                                       ),
                                       onPressed: () {
-                                        // TODO: профиль
                                       },
                                     ),
                                     IconButton(
@@ -383,8 +434,6 @@ class _EvolutionRouteScreenState<TNode>
                       ],
                     ),
                   ),
-
-                  // Заголовок поверх карточки
                   IgnorePointer(
                     child: Container(
                       height: 80,
