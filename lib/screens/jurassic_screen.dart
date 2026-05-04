@@ -58,12 +58,25 @@ class _JurassicScreenState extends State<JurassicScreen> {
   }
 
   Future<void> _loadStepsFromRepository() async {
-    final today = DateTime.now();
-    final stat = await dailyStepsRepository.getForDate(today);
-    if (stat != null && mounted) {
-      setState(() {
-        _userSteps = stat.totalSteps;
-      });
+    try {
+      // Загружаем шаги с фиксированной даты начала игры
+      final startDate = DateTime(2026, 1, 1);
+      final today = DateTime.now();
+      
+      final stats = await dailyStepsRepository.getRange(
+        from: startDate,
+        to: today,
+      );
+      
+      if (mounted) {
+        setState(() {
+          // Суммируем все шаги за период
+          _userSteps = stats.fold(0, (sum, stat) => sum + stat.totalSteps);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading cumulative steps: $e');
+      // В случае ошибки оставляем 0 или последнее известное значение
     }
   }
 

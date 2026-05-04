@@ -6,6 +6,8 @@ import 'dart:math' as math;
 import '../../data/daily_steps_repository.dart';
 import 'stat_range.dart';
 import 'statistics_models.dart';
+import '../../widgets/bar_chart.dart';
+import '../../widgets/month_heatmap.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({
@@ -19,32 +21,52 @@ class StatisticsScreen extends StatefulWidget {
   State<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _StatisticsScreenState extends State<StatisticsScreen> {
+class _StatisticsScreenState extends State<StatisticsScreen>
+    with SingleTickerProviderStateMixin {
   StatsRange _range = StatsRange.week;
   DateTimeRange? _customRange;
+  int _periodOffset = 0;
 
   List<AggregatedStatsPoint> _points = [];
   PeriodSummary? _summary;
   bool _isLoading = true;
   String? _errorText;
 
-  // 🎨 Цветовая палитра
+  late AnimationController _animationController;
+  bool _animateBars = false;
+
   static const Color _primaryGreen = Color(0xFF4B5E09);
   static const Color _backgroundDark = Color(0xFF061B14);
   static const Color _accentLight = Color(0xFFEEF8CC);
   static const Color _secondaryDark = Color(0xFF2E3A05);
   static const Color _textWhite = Colors.white;
 
+  static const Color _colorPast = Color(0xFF4B5E09);
+  static const Color _colorToday = Color(0xFF7FB83E);
+  static const Color _colorFuture = Color(0xFF1A2A0A);
+  static const Color _colorStump = Color(0xFF0F1A05);
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
     _loadStats();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadStats() async {
     setState(() {
       _isLoading = true;
       _errorText = null;
+      _animateBars = false;
     });
 
     try {
@@ -54,17 +76,22 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
       switch (_range) {
         case StatsRange.day:
-          from = DateTime(now.year, now.month, now.day);
+          from = DateTime(now.year, now.month, now.day).add(Duration(days: _periodOffset));
           to = from;
           break;
         case StatsRange.week:
-          final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+          final baseStart = now.subtract(Duration(days: now.weekday - 1));
+          final startOfWeek = baseStart.add(Duration(days: _periodOffset * 7));
           from = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
-          to = DateTime(now.year, now.month, now.day);
+          to = from.add(const Duration(days: 6));
           break;
         case StatsRange.month:
-          from = DateTime(now.year, now.month, 1);
-          to = DateTime(now.year, now.month + 1, 0);
+          var targetMonth = now.month + _periodOffset;
+          var targetYear = now.year;
+          while (targetMonth > 12) { targetMonth -= 12; targetYear++; }
+          while (targetMonth < 1) { targetMonth += 12; targetYear--; }
+          from = DateTime(targetYear, targetMonth, 1);
+          to = DateTime(targetYear, targetMonth + 1, 0);
           break;
         case StatsRange.custom:
           if (_customRange == null) {
@@ -77,7 +104,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       }
 
       final raw = await widget.repository.getRange(from: from, to: to);
-      final aggregated = _aggregate(raw);
+      
+      final aggregated = _range == StatsRange.week 
+          ? _padWeekData(_aggregate(raw), from) 
+          : _aggregate(raw);
+          
       final summary = _buildSummary(aggregated);
 
       setState(() {
@@ -86,25 +117,65 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         _isLoading = false;
         _errorText = null;
       });
+      
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _animateBars = true);
+        }
+      });
     } catch (e) {
       setState(() {
         _isLoading = false;
         _points = [];
         _summary = null;
-        _errorText = 'Ошибка при загрузке статистики: $e';
+        _errorText = 'Ошибка: $e';
       });
     }
   }
 
+  List<AggregatedStatsPoint> _padWeekData(
+    List<AggregatedStatsPoint> points, 
+    DateTime weekStart
+  ) {
+    final result = <AggregatedStatsPoint>[];
+    final pointMap = {for (var p in points) _dayKey(p.date): p};
+    
+    for (var i = 0; i < 7; i++) {
+      final date = weekStart.add(Duration(days: i));
+      final key = _dayKey(date);
+      result.add(pointMap[key] ?? AggregatedStatsPoint(date: date, totalSteps: 0));
+    }
+    return result;
+  }
+
+  int _dayKey(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
+
+  void _previousPeriod() {
+    setState(() => _periodOffset--);
+    _loadStats();
+  }
+
+  void _nextPeriod() {
+    setState(() => _periodOffset++);
+    _loadStats();
+  }
+
   List<AggregatedStatsPoint> _aggregate(List<DailyStepsStat> stats) {
-    return stats
-        .map(
-          (s) => AggregatedStatsPoint(
-            date: s.date,
-            totalSteps: s.totalSteps,
-          ),
-        )
-        .toList();
+    if (_range == StatsRange.day && stats.isNotEmpty) {
+      final firstDay = stats.first;
+      return List.generate(24, (hour) {
+        final steps = firstDay.hourlySteps[hour] ?? 0;
+        return AggregatedStatsPoint(
+          date: DateTime(firstDay.date.year, firstDay.date.month, firstDay.date.day, hour),
+          totalSteps: steps,
+        );
+      });
+    }
+    
+    return stats.map((s) => AggregatedStatsPoint(
+      date: s.date,
+      totalSteps: s.totalSteps,
+    )).toList();
   }
 
   PeriodSummary _buildSummary(List<AggregatedStatsPoint> points) {
@@ -118,9 +189,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     }
 
     final total = points.fold<int>(0, (sum, p) => sum + p.totalSteps);
-    final best = points.reduce(
-      (a, b) => a.totalSteps >= b.totalSteps ? a : b,
-    );
+    final best = points.reduce((a, b) => a.totalSteps >= b.totalSteps ? a : b);
     final avg = total / points.length;
 
     return PeriodSummary(
@@ -131,50 +200,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Future<void> _pickCustomRange() async {
-    final now = DateTime.now();
-    final result = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 1),
-      initialDateRange: _customRange ??
-          DateTimeRange(
-            start: DateTime(now.year, now.month, now.day - 6),
-            end: DateTime(now.year, now.month, now.day),
-          ),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.dark(
-              primary: _primaryGreen,
-              onPrimary: _textWhite,
-              surface: _secondaryDark,
-              onSurface: _textWhite,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (result == null) return;
-
-    setState(() {
-      _customRange = result;
-      _range = StatsRange.custom;
-    });
-    await _loadStats();
-  }
-
-  void _onRangeChanged(StatsRange range) {
-    setState(() {
-      _range = range;
-      if (range != StatsRange.custom) {
-        _customRange = null;
-      }
-    });
-    _loadStats();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,8 +207,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       appBar: AppBar(
         backgroundColor: _secondaryDark,
         elevation: 0,
-        title: Text(
-          '📊 Статистика',
+        title: const Text(
+          'Статистика',
           style: TextStyle(
             color: _textWhite,
             fontWeight: FontWeight.bold,
@@ -192,68 +217,157 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         ),
         centerTitle: true,
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: _primaryGreen,
-                backgroundColor: _secondaryDark,
-              ),
-            )
-          : _errorText != null
-              ? Center(
-                  child: Text(
-                    _errorText!,
-                    style: TextStyle(color: _accentLight),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : Column(
-                  children: [
-                    _buildRangeSelector(),
-                    if (_summary != null) _buildSummaryCards(_summary!),
-                    const SizedBox(height: 12),
-                    Expanded(child: _buildChart()),
-                  ],
-                ),
-    );
-  }
-
-  // 🎯 Селектор диапазона с новой стилизацией
-  Widget _buildRangeSelector() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: _secondaryDark,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      body: Stack(
         children: [
-          _rangeChip('День', StatsRange.day),
-          _rangeChip('Неделя', StatsRange.week),
-          _rangeChip('Месяц', StatsRange.month),
-          GestureDetector(
-            onTap: _pickCustomRange,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _range == StatsRange.custom ? _primaryGreen : _accentLight.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: _range == StatsRange.custom ? _accentLight : _primaryGreen,
-                  width: 1.5,
-                ),
-              ),
-              child: Text(
-                _customRange == null ? '📅 Диапазон' : '✓',
-                style: TextStyle(
-                  color: _textWhite,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.12,
+                child: Image.asset(
+                  'assets/images/plants/plant01.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomRight,
                 ),
               ),
             ),
           ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: 0.12,
+                child: Image.asset(
+                  'assets/images/plants/plant02.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomLeft,
+                ),
+              ),
+            ),
+          ),
+          _buildBodyContent(),
         ],
       ),
     );
+  }
+
+  Widget _buildBodyContent() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: _primaryGreen,
+          backgroundColor: _secondaryDark,
+        ),
+      );
+    }
+    
+    if (_errorText != null) {
+      return Center(
+        child: Text(
+          _errorText!,
+          style: TextStyle(color: _accentLight),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        _buildRangeSelector(),
+        if (_summary != null) _buildSummaryCards(_summary!),
+        const SizedBox(height: 12),
+        Expanded(child: _buildChart()),
+      ],
+    );
+  }
+
+  Widget _buildRangeSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: _secondaryDark,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.chevron_left, color: _accentLight),
+                onPressed: _previousPeriod,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              ),
+              Expanded(
+                child: Text(
+                  _getPeriodLabel(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: _accentLight,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_right, color: _accentLight),
+                onPressed: _nextPeriod,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _rangeChip('День', StatsRange.day),
+              _rangeChip('Неделя', StatsRange.week),
+              _rangeChip('Месяц', StatsRange.month),
+              GestureDetector(
+                onTap: _pickCustomRange,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _range == StatsRange.custom ? _primaryGreen : _accentLight.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _range == StatsRange.custom ? _accentLight : _primaryGreen,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Text(
+                    _customRange == null ? 'Диапазон' : '✓',
+                    style: TextStyle(
+                      color: _textWhite,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getPeriodLabel() {
+    final now = DateTime.now();
+    switch (_range) {
+      case StatsRange.day:
+        final targetDate = DateTime(now.year, now.month, now.day).add(Duration(days: _periodOffset));
+        return '${targetDate.day}.${targetDate.month}.${targetDate.year}';
+      case StatsRange.week:
+        final start = now.subtract(Duration(days: now.weekday - 1)).add(Duration(days: _periodOffset * 7));
+        final end = start.add(const Duration(days: 6));
+        return '${start.day}.${start.month} – ${end.day}.${end.month}';
+      case StatsRange.month:
+        var month = now.month + _periodOffset;
+        var year = now.year;
+        while (month > 12) { month -= 12; year++; }
+        while (month < 1) { month += 12; year--; }
+        final monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 
+                           'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+        return '${monthNames[month - 1]} $year';
+      case StatsRange.custom:
+        return 'Выбранный период';
+    }
   }
 
   Widget _rangeChip(String label, StatsRange value) {
@@ -283,7 +397,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  // 📈 Карточки с итоговой статистикой
   Widget _buildSummaryCards(PeriodSummary summary) {
     final bestDayStr = summary.bestDayDate != null
         ? '${summary.bestDayDate!.day}.${summary.bestDayDate!.month}'
@@ -293,11 +406,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          _expandedSummaryCard('👣 Всего', summary.totalSteps.toString(), _primaryGreen),
+          _expandedSummaryCard('Всего', summary.totalSteps.toString(), _primaryGreen),
           const SizedBox(width: 10),
-          _expandedSummaryCard('📅 В день', summary.averagePerDay.toStringAsFixed(0), _secondaryDark),
+          _expandedSummaryCard('В день', summary.averagePerDay.toStringAsFixed(0), _secondaryDark),
           const SizedBox(width: 10),
-          _expandedSummaryCard('🏆 Рекорд', '${summary.bestDaySteps}\n$bestDayStr', _accentLight.withOpacity(0.3)),
+          _expandedSummaryCard('Рекорд', '${summary.bestDaySteps}\n$bestDayStr', _accentLight.withOpacity(0.3)),
         ],
       ),
     );
@@ -308,14 +421,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              accentColor.withOpacity(0.4),
-              accentColor.withOpacity(0.1),
-            ],
-          ),
+          color: accentColor.withOpacity(0.2),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: accentColor.withOpacity(0.6), width: 1),
         ),
@@ -336,7 +442,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             Text(
               label,
               style: TextStyle(
-                color: _accentLight.withOpacity(0.9),
+                color: _accentLight,
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
               ),
@@ -348,113 +454,54 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  // 📊 Визуальный график шагов
   Widget _buildChart() {
-    if (_points.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.show_chart,
-              size: 64,
-              color: _accentLight.withOpacity(0.4),
+  if (_points.isEmpty) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.show_chart,
+            size: 64,
+            color: _accentLight,
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Нет данных для периода',
+            style: TextStyle(
+              color: _accentLight,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Нет данных для периода',
-              style: TextStyle(
-                color: _accentLight.withOpacity(0.7),
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        // 📈 Мини-график (бар-чарт)
-        Expanded(
-          flex: 3,
-          child: _buildBarChart(),
-        ),
-        // 📋 Список дней
-        Expanded(
-          flex: 2,
-          child: _buildStepsList(),
-        ),
-      ],
-    );
-  }
-
-  // 📊 Горизонтальный бар-чарт
-  Widget _buildBarChart() {
-    if (_points.isEmpty) return const SizedBox();
-
-    final maxSteps = _points.map((p) => p.totalSteps).reduce(math.max).toDouble();
-    final barWidth = (MediaQuery.of(context).size.width - 40) / _points.length - 4;
-
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: _points.map((point) {
-          final height = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0;
-          final dayLabel = '${point.date.day}.${point.date.month}';
-          
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Бар
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: math.max(barWidth, 8),
-                height: math.max(height * 100, 4),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      _primaryGreen,
-                      _primaryGreen.withOpacity(0.7),
-                      _accentLight.withOpacity(0.8),
-                    ],
-                  ),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _primaryGreen.withOpacity(0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 6),
-              // Подпись дня
-              Text(
-                dayLabel,
-                style: TextStyle(
-                  color: _accentLight.withOpacity(0.7),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
   }
 
-  // 📋 Список дней с шагами
+  if (_range == StatsRange.month) {
+    return MonthHeatmap(
+      points: _points,
+      animateBars: _animateBars,
+    );
+  }
+
+  return Column(
+    children: [
+      Expanded(flex: 3, child: BarChart(
+        points: _points,
+        range: _range,
+        animateBars: _animateBars,
+      )),
+      Expanded(flex: 2, child: _buildStepsList()), // ✅ Оставляем старый метод
+    ],
+  );
+}
+
   Widget _buildStepsList() {
     return Container(
       decoration: BoxDecoration(
-        color: _secondaryDark.withOpacity(0.5),
+        color: _secondaryDark,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: ListView.separated(
@@ -464,7 +511,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         itemBuilder: (context, index) {
           final p = _points[index];
           final dayName = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][p.date.weekday - 1];
-          final dateStr = '${p.date.day}.${p.date.month}';
+          final dateStr = _range == StatsRange.day 
+              ? '${p.date.hour}:00–${(p.date.hour + 1) % 24}:00'
+              : '${p.date.day}.${p.date.month}';
           
           return ListTile(
             contentPadding: EdgeInsets.zero,
@@ -473,12 +522,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: _primaryGreen.withOpacity(0.3),
+                color: _primaryGreen,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
                 child: Text(
-                  dayName,
+                  _range == StatsRange.day ? '${p.date.hour}' : dayName,
                   style: TextStyle(
                     color: _accentLight,
                     fontSize: 11,
@@ -515,5 +564,51 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _pickCustomRange() async {
+    final now = DateTime.now();
+    final result = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 1),
+      initialDateRange: _customRange ??
+          DateTimeRange(
+            start: DateTime(now.year, now.month, now.day - 6),
+            end: DateTime(now.year, now.month, now.day),
+          ),
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: _primaryGreen,
+              onPrimary: _textWhite,
+              surface: _secondaryDark,
+              onSurface: _textWhite,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (result == null) return;
+
+    setState(() {
+      _customRange = result;
+      _range = StatsRange.custom;
+      _periodOffset = 0;
+    });
+    await _loadStats();
+  }
+
+  void _onRangeChanged(StatsRange range) {
+    setState(() {
+      _range = range;
+      _periodOffset = 0;
+      if (range != StatsRange.custom) {
+        _customRange = null;
+      }
+    });
+    _loadStats();
   }
 }
