@@ -20,6 +20,8 @@ import '../widgets/breathing_gradient_background.dart';
 import '../widgets/creature_blueprint.dart';
 import 'jurassic_vertical_timeline_screen.dart';
 import '../main.dart';
+import '../data/repositories/route_state_repository.dart';
+import '../data/daily_steps_repository.dart';
 
 class JurassicScreen extends StatefulWidget {
   const JurassicScreen({super.key});
@@ -37,6 +39,9 @@ class _JurassicScreenState extends State<JurassicScreen> {
 
   int _userSteps = 0;
   JurassicNode? _selectedNode;
+  
+  RouteStateRepository? _routeRepo;
+  bool _isRouteCompleted = false;
 
   static const List<Color> _backgroundColors = [
     Color(0xFF0A1929),
@@ -49,12 +54,30 @@ class _JurassicScreenState extends State<JurassicScreen> {
   void initState() {
     super.initState();
     _loadData();
-    _loadStepsFromRepository();
+    _loadRouteStatus();
   }
 
   @override
   void dispose() {
+    _routeRepo?.close();
     super.dispose();
+  }
+
+  Future<void> _loadRouteStatus() async {
+    _routeRepo = RouteStateRepository();
+    final isCompleted = await _routeRepo!.isRouteCompleted('jurassic');
+    final activeRoute = await _routeRepo!.getActiveRoute();
+    
+    if (mounted) {
+      setState(() {
+        _isRouteCompleted = isCompleted;
+      });
+    }
+    
+    // Если маршрут уже пройден, блокируем добавление шагов
+    if (!isCompleted) {
+      _loadStepsFromRepository();
+    }
   }
 
   Future<void> _loadStepsFromRepository() async {
@@ -63,20 +86,43 @@ class _JurassicScreenState extends State<JurassicScreen> {
       final startDate = DateTime(2026, 1, 1);
       final today = DateTime.now();
       
-      final stats = await dailyStepsRepository.getRange(
+      final stepsRepo = await DailyStepsRepository.getInstance();
+      final stats = await stepsRepo.getRange(
         from: startDate,
         to: today,
       );
+      //await stepsRepo.close();
       
       if (mounted) {
         setState(() {
           // Суммируем все шаги за период
           _userSteps = stats.fold(0, (sum, stat) => sum + stat.totalSteps);
         });
+        
+        // Проверяем, не завершён ли маршрут
+        _checkRouteCompletion();
       }
     } catch (e) {
       debugPrint('Error loading cumulative steps: $e');
-      // В случае ошибки оставляем 0 или последнее известное значение
+    }
+  }
+
+  Future<void> _checkRouteCompletion() async {
+    if (_data == null || _isRouteCompleted) return;
+    
+    final isComplete = _userSteps >= _data!.totalSteps;
+    if (isComplete && !_hasReachedFinal) {
+      setState(() {
+        _hasReachedFinal = true;
+        _showFinalConfetti = true;
+      });
+      
+      Future.delayed(const Duration(seconds: 6), () {
+        if (!mounted) return;
+        setState(() {
+          _showFinalConfetti = false;
+        });
+      });
     }
   }
 
@@ -93,6 +139,8 @@ class _JurassicScreenState extends State<JurassicScreen> {
         _selectedNode = data.nodes.first;
         _isLoading = false;
       });
+      
+      _checkRouteCompletion();
     } catch (e) {
       debugPrint('Error loading jurassic data: $e');
       setState(() => _isLoading = false);
@@ -122,7 +170,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
   }
 
   void _simulateSteps() {
-    if (_data == null) return;
+    if (_data == null || _isRouteCompleted) return;
 
     setState(() {
       _userSteps += 500;
@@ -152,6 +200,95 @@ class _JurassicScreenState extends State<JurassicScreen> {
         });
       }
     });
+  }
+
+  Future<void> _completeRoute() async {
+    if (_data == null) return;
+    
+    // Проверяем, пройден ли маршрут
+    if (_userSteps < _data!.totalSteps) {
+      final notCompleted = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Маршрут не пройден'),
+          content: Text(
+            'Вы прошли только $_userSteps из ${_data!.totalSteps} шагов. '
+            'Завершить маршрут можно только после полного прохождения.\n\n'
+            'Продолжайте ходить! 🚶‍♀️',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Понятно'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    
+    final shouldComplete = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Завершить маршрут?'),
+        content: const Text(
+          'Вы действительно хотите завершить маршрут "Юрский период"?\n\n'
+          '✅ Маршрут будет отмечен как пройденный\n'
+          '✅ Вы получите доступ к новым маршрутам\n'
+          '❌ Это действие нельзя отменить',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.green,
+            ),
+            child: const Text('Завершить'),
+          ),
+        ],
+      ),
+    );
+    
+    if (shouldComplete == true && mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      try {
+        await _routeRepo?.markRouteCompleted('jurassic');
+        await _routeRepo?.clearActiveRoute();
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('🎉 Поздравляем! Маршрут "Юрский период" завершён! 🎉'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+          
+          // Возвращаемся на экран выбора маршрутов
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        debugPrint('Error completing route: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ошибка при завершении маршрута'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
   }
 
   void _showBlueprint(JurassicNode node) {
@@ -278,7 +415,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
         colors: _backgroundColors,
         child: Scaffold(
           backgroundColor: Colors.transparent,
-          body: Center(
+          body: const Center(
             child: CircularProgressIndicator(
               color: Colors.white,
               backgroundColor: Colors.white24,
@@ -304,17 +441,78 @@ class _JurassicScreenState extends State<JurassicScreen> {
     }
 
     final node = _selectedNode!;
+    final isCompleted = _isRouteCompleted;
+    final isFullyUnlocked = _userSteps >= _data!.totalSteps;
 
     return BreathingGradientBackground(
       colors: _backgroundColors,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: _simulateSteps,
-          backgroundColor: Color(0xFF4B5E09),
-          foregroundColor: Colors.white,
-          icon: const Icon(Icons.directions_walk),
-          label: const Text('+500 шагов'),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            // Кнопка карты/таймлайна
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.map_outlined,
+                  color: Color(0xFF061B14),
+                ),
+                onPressed: _openTimeline,
+              ),
+            ),
+            // Кнопка завершения маршрута (показываем только если пройден)
+            if (isFullyUnlocked && !isCompleted)
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.flag,
+                    color: Colors.white,
+                  ),
+                  onPressed: _completeRoute,
+                  tooltip: 'Завершить маршрут',
+                ),
+              ),
+            // Бейдж "Пройден"
+            if (isCompleted)
+              Container(
+                margin: const EdgeInsets.only(right: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white, size: 16),
+                    SizedBox(width: 4),
+                    Text(
+                      'ПРОЙДЕН',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
         body: SafeArea(
           child: Column(
@@ -336,59 +534,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
                           duration: const Duration(milliseconds: 500),
                           child: _buildDinoImage(node),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Color(0xFF061B14),
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.map_outlined,
-                                color: Color(0xFF061B14),
-                              ),
-                              onPressed: _openTimeline,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.9),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.settings_outlined,
-                                color: Color(0xFF061B14),
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                     SimpleConfetti(isActive: _showFinalConfetti),
@@ -475,6 +620,15 @@ class _JurassicScreenState extends State<JurassicScreen> {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
+                                    if (isCompleted)
+                                      const Padding(
+                                        padding: EdgeInsets.only(left: 8),
+                                        child: Icon(
+                                          Icons.check_circle,
+                                          size: 14,
+                                          color: Colors.green,
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ],
@@ -513,6 +667,16 @@ class _JurassicScreenState extends State<JurassicScreen> {
             ],
           ),
         ),
+        // Для отладки — можно оставить кнопку симуляции (закомментирована)
+        // floatingActionButton: !isCompleted
+        //     ? FloatingActionButton.extended(
+        //         onPressed: _simulateSteps,
+        //         backgroundColor: const Color(0xFF4B5E09),
+        //         foregroundColor: Colors.white,
+        //         icon: const Icon(Icons.directions_walk),
+        //         label: const Text('+500 шагов'),
+        //       )
+        //     : null,
       ),
     );
   }

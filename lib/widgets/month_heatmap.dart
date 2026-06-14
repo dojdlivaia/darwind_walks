@@ -118,7 +118,7 @@ class _MonthHeatmapState extends State<MonthHeatmap>
               ),
               itemCount: 42,
               itemBuilder: (context, index) {
-                final dayIndex = index - (startingWeekday - 1);
+                final dayIndex = index - startingWeekday + 2;
                 
                 if (dayIndex < 1 || dayIndex > totalDaysInMonth) {
                   return const SizedBox();

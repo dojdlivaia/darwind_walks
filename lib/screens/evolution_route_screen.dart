@@ -10,7 +10,7 @@ import '../widgets/simple_confetti.dart';
 import '../widgets/breathing_gradient_background.dart';
 import '../widgets/creature_blueprint.dart';
 import '../models/creature_info.dart';
-import '../main.dart';
+import '../data/daily_steps_repository.dart';
 import 'statistics/statistics_screen.dart';
 import '../models/whale.dart';
 import '../models/jurassic.dart';
@@ -50,6 +50,59 @@ class _EvolutionRouteScreenState<TNode>
   void initState() {
     super.initState();
     _loadData();
+    _loadStepsFromRepository();
+  }
+
+  Future<void> _loadStepsFromRepository() async {
+    try {
+      final startDate = DateTime(2026, 1, 1);
+      final today = DateTime.now();
+      
+      // ✅ Используем синглтон
+      final stepsRepo = await DailyStepsRepository.getInstance();
+      final stats = await stepsRepo.getRange(
+        from: startDate,
+        to: today,
+      );
+      
+      if (mounted) {
+        setState(() {
+          _userSteps = stats.fold(0, (sum, stat) => sum + stat.totalSteps);
+        });
+        
+        // Проверяем, не достигнут ли финальный узел
+        if (_nodes != null && _selectedNode != null) {
+          final latestUnlockedNode = _findLastUnlockedNode(
+            _nodes!,
+            _userSteps,
+          );
+          if (latestUnlockedNode != _selectedNode) {
+            setState(() {
+              _selectedNode = latestUnlockedNode;
+            });
+          }
+          
+          // Проверка на финальный узел
+          final nodes = _nodes!;
+          final current = _selectedNode;
+          if (current != null &&
+              widget.config.isFinalNode(current, nodes) &&
+              !_hasReachedFinal) {
+            _hasReachedFinal = true;
+            _showFinalConfetti = true;
+
+            Future.delayed(const Duration(seconds: 6), () {
+              if (!mounted) return;
+              setState(() {
+                _showFinalConfetti = false;
+              });
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading cumulative steps: $e');
+    }
   }
 
   Future<void> _loadData() async {
@@ -134,7 +187,6 @@ class _EvolutionRouteScreenState<TNode>
   }
 
   void _showCreatureBlueprint(BuildContext context, TNode node) {
-    // Используем фабричные методы CreatureInfo
     CreatureInfo creature;
     
     if (node is WhaleNode) {
@@ -179,14 +231,6 @@ class _EvolutionRouteScreenState<TNode>
         ),
       ),
     );
-  }
-
-  double? _toDouble(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value.toDouble();
-    if (value is double) return value;
-    if (value is String) return double.tryParse(value);
-    return null;
   }
 
   @override
@@ -407,6 +451,7 @@ class _EvolutionRouteScreenState<TNode>
                                         color: Colors.black87,
                                       ),
                                       onPressed: () {
+                                        // TODO: Открыть профиль
                                       },
                                     ),
                                     IconButton(
@@ -415,14 +460,18 @@ class _EvolutionRouteScreenState<TNode>
                                         size: 28,
                                         color: Colors.black87,
                                       ),
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (_) => StatisticsScreen(
-                                              repository: dailyStepsRepository,
+                                      onPressed: () async {
+                                        // ✅ Используем синглтон
+                                        final stepsRepo = await DailyStepsRepository.getInstance();
+                                        if (mounted) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => StatisticsScreen(
+                                                repository: stepsRepo,
+                                              ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                     ),
                                   ],

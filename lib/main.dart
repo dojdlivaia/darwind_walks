@@ -3,25 +3,41 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 import 'data/daily_steps_repository.dart';
+import 'data/repositories/route_state_repository.dart';
 import 'screens/main_shell.dart';
 import 'services/step_tracker_service.dart';
 
-late final DailyStepsRepository dailyStepsRepository;
-late final StepTrackerService stepTrackerService;
+// Глобальные сервисы (теперь через геттеры)
+StepTrackerService? _stepTrackerService;
+
+// Геттеры для доступа к сервисам
+Future<StepTrackerService> getStepTrackerService() async {
+  if (_stepTrackerService == null) {
+    final stepsRepo = await DailyStepsRepository.getInstance();
+    _stepTrackerService = StepTrackerService(stepsRepo);
+    await _stepTrackerService!.start();
+  }
+  return _stepTrackerService!;
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔹 1. Запрос разрешений ПЕРЕД инициализацией шагомера
+  // 🔹 1. Запрос разрешений
   await _requestPermissions();
 
-  dailyStepsRepository = await DailyStepsRepository.init();
-  stepTrackerService = StepTrackerService(dailyStepsRepository);
+  // 🔹 2. Инициализация репозиториев (Singleton)
+  await DailyStepsRepository.getInstance();
+  await RouteStateRepository.getInstance();
+  debugPrint('✅ Репозитории инициализированы');
 
-  // 🔹 2. Запускаем слушать шаги только после получения разрешений
-  await stepTrackerService.start();
+  // 🔹 3. Инициализация шагомера
+  _stepTrackerService = StepTrackerService(
+    await DailyStepsRepository.getInstance(),
+  );
+  await _stepTrackerService!.start();
+  debugPrint('✅ StepTrackerService запущен');
 
   runApp(const DarwinApp());
 }
@@ -36,6 +52,12 @@ Future<void> _requestPermissions() async {
     // Для iOS (если понадобится доступ к другим сенсорам)
     final sensorsStatus = await Permission.sensors.request();
     debugPrint('🔐 Permission.sensors: $sensorsStatus'); 
+
+    // Для Android 12+ (API 31+)
+    if (await Permission.notification.isDenied) {
+      final notificationStatus = await Permission.notification.request();
+      debugPrint('🔐 Permission.notification: $notificationStatus');
+    }
 
     // Проверка для отладки
     if (!activityStatus.isGranted) {

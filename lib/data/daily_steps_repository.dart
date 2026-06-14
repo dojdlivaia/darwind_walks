@@ -1,7 +1,6 @@
 // lib/data/daily_steps_repository.dart
 
 import 'dart:convert';
-
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -23,38 +22,42 @@ class DailyStepsStat {
 }
 
 class DailyStepsRepository {
-  DailyStepsRepository(this._db);
-
-  final Database _db;
-
-  static const _table = 'daily_steps';
-
-  static Future<DailyStepsRepository> init() async {
+  // 🆕 Singleton
+  static DailyStepsRepository? _instance;
+  static Database? _db;
+  
+  DailyStepsRepository._internal();
+  
+  static Future<DailyStepsRepository> getInstance() async {
+    if (_instance == null) {
+      _instance = DailyStepsRepository._internal();
+      await _instance!._init();
+    }
+    return _instance!;
+  }
+  
+  Future<void> _init() async {
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'darwin_steps.db');
 
-    final db = await openDatabase(
+    _db = await openDatabase(
       path,
       version: 2,
-      onCreate: (db, version) async {
-        await _createTable(db);
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion == 1) {
-          await db.execute('ALTER TABLE $_table ADD COLUMN hourlyStepsJson TEXT');
-          await db.execute('''
-            UPDATE $_table 
-            SET hourlyStepsJson = '{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}'
-            WHERE hourlyStepsJson IS NULL
-          ''');
-        }
-      },
+      onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
-
-    return DailyStepsRepository(db);
+  }
+  
+  Database get db {
+    if (_db == null) {
+      throw Exception('Database not initialized. Call getInstance() first.');
+    }
+    return _db!;
   }
 
-  static Future<void> _createTable(Database db) async {
+  static const _table = 'daily_steps';
+
+  Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $_table (
         dayKey INTEGER PRIMARY KEY,
@@ -67,6 +70,17 @@ class DailyStepsRepository {
     ''');
   }
 
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion == 1) {
+      await db.execute('ALTER TABLE $_table ADD COLUMN hourlyStepsJson TEXT');
+      await db.execute('''
+        UPDATE $_table 
+        SET hourlyStepsJson = '{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}'
+        WHERE hourlyStepsJson IS NULL
+      ''');
+    }
+  }
+
   static int _dayKeyFromDate(DateTime d) =>
       d.year * 10000 + d.month * 100 + d.day;
 
@@ -74,12 +88,10 @@ class DailyStepsRepository {
     return {for (var i = 0; i < 24; i++) i: 0};
   }
 
-  // ✅ Вспомогательный метод: Map<int, int> → Map<String, int> для JSON
   static Map<String, int> _encodeHourlyMap(Map<int, int> map) {
     return map.map((k, v) => MapEntry(k.toString(), v));
   }
 
-  // ✅ Вспомогательный метод: Map<String, dynamic> → Map<int, int> из JSON
   static Map<int, int> _decodeHourlyMap(String? jsonStr) {
     if (jsonStr == null) return _createEmptyHourlyMap();
     try {
@@ -94,7 +106,7 @@ class DailyStepsRepository {
     final local = DateTime(date.year, date.month, date.day);
     final dayKey = _dayKeyFromDate(local);
 
-    final rows = await _db.query(
+    final rows = await db.query(
       _table,
       where: 'dayKey = ?',
       whereArgs: [dayKey],
@@ -130,7 +142,7 @@ class DailyStepsRepository {
   }) async {
     if (stepsDelta <= 0) return;
 
-    await _db.transaction((txn) async {
+    await db.transaction((txn) async {
       final local = DateTime(date.year, date.month, date.day);
       final dayKey = _dayKeyFromDate(local);
       final hour = date.hour;
@@ -165,10 +177,8 @@ class DailyStepsRepository {
               as Map<String, dynamic>)
           .map((k, v) => MapEntry(k, (v as num).toInt()));
 
-      // ✅ Декодируем почасовые данные
       final hourlyMap = _decodeHourlyMap(row['hourlyStepsJson'] as String?);
       
-      // Обновляем нужный час
       hourlyMap[hour] = (hourlyMap[hour] ?? 0) + stepsDelta;
 
       final currentRouteSteps = routeMap[routeId] ?? 0;
@@ -177,7 +187,6 @@ class DailyStepsRepository {
       final updated = <String, dynamic>{
         'totalSteps': currentTotal + stepsDelta,
         'stepsByRouteJson': jsonEncode(routeMap),
-        // ✅ Кодируем Map<int, int> → Map<String, int> перед сохранением
         'hourlyStepsJson': jsonEncode(_encodeHourlyMap(hourlyMap)),
         'updatedAt': now.toIso8601String(),
       };
@@ -206,7 +215,7 @@ class DailyStepsRepository {
     final fromKey = _dayKeyFromDate(f);
     final toKey = _dayKeyFromDate(t);
 
-    final rows = await _db.query(
+    final rows = await db.query(
       _table,
       where: 'dayKey BETWEEN ? AND ?',
       whereArgs: [fromKey, toKey],
@@ -216,11 +225,22 @@ class DailyStepsRepository {
     return rows.map(_mapRow).toList();
   }
 
-  Future<void> clearAll() async {
-    await _db.delete(_table);
+  Future<int> getTotalStepsForRoute(String routeId) async {
+    final allStats = await getRange(
+      from: DateTime(2024, 1, 1),
+      to: DateTime.now(),
+    );
+    
+    return allStats.fold<int>(
+      0,
+      (sum, stat) => sum + (stat.stepsByRoute[routeId] ?? 0),
+    );
   }
 
-  Future<void> close() async {
-    await _db.close();
+  Future<void> clearAll() async {
+    await db.delete(_table);
   }
+
+  // ❌ Удалить метод close() — БД должна жить всегда
+  // Future<void> close() async { ... }
 }

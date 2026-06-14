@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:darwin_walk/screens/profile_screen.dart';
 import 'package:darwin_walk/screens/ready_routes_screen.dart';
 import 'package:darwin_walk/screens/statistics/statistics_screen.dart';
-import 'package:darwin_walk/main.dart';
+import 'package:darwin_walk/data/daily_steps_repository.dart';
 
 class DarwinBottomBar extends StatelessWidget {
   final int currentIndex;
@@ -75,17 +75,21 @@ class DarwinBottomBar extends StatelessWidget {
               size: 28,
               color: currentIndex == 2 ? Colors.black : Colors.black54,
             ),
-            onPressed: () {
+            onPressed: () async {
               if (onInfoTapped != null) {
                 onInfoTapped!(2);
               } else {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => StatisticsScreen(
-                      repository: dailyStepsRepository,
+                // ✅ Используем синглтон вместо глобальной переменной
+                final stepsRepo = await DailyStepsRepository.getInstance();
+                if (context.mounted) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => StatisticsScreen(
+                        repository: stepsRepo,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
               }
             },
           ),
