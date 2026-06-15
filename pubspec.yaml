@@ -30,10 +30,12 @@ flutter:
     - assets/data/jurassic.json
     - assets/data/whale.json
     - assets/data/cenozoic.json
+    - assets/data/achievements.json 
     - assets/images/
     - assets/images/routes/
     - assets/images/jurassic/
     - assets/images/whales/
     - assets/images/cenozoic/
+    - assets/images/badges/ 
     - assets/images/plants/plant01.png
     - assets/images/plants/plant02.png

@@ -638,7 +638,10 @@ class _JurassicScreenState extends State<JurassicScreen> {
               DarwinBottomBar(
                 currentIndex: 0,
                 onHomeTapped: (index) {},
-                onInfoTapped: (index) {},
+                onStatsTapped: (index) {},   // ✅ статистика
+                onRoutesTapped: (index) {},  // ✅ маршруты
+                onAchievementsTapped: (index) {}, // ✅ достижения
+                onProfileTapped: (index) {},  // ✅ профиль
               ),
             ],
           ),

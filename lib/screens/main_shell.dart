@@ -1,8 +1,11 @@
+// lib/screens/main_shell.dart
+
 import 'package:flutter/material.dart';
 import 'package:darwin_walk/screens/home_screen.dart';
 import 'package:darwin_walk/screens/ready_routes_screen.dart';
 import 'package:darwin_walk/screens/statistics/statistics_screen.dart';
 import 'package:darwin_walk/screens/profile_screen.dart';
+import 'package:darwin_walk/screens/achievements/achievements_screen.dart';
 import 'package:darwin_walk/data/daily_steps_repository.dart';
 import '../widgets/bottom_bar.dart';
 
@@ -27,6 +30,7 @@ class _MainShellState extends State<MainShell> {
       const HomeScreen(),
       const ReadyRoutesScreen(),
       const SizedBox(), // временная заглушка для статистики
+      const AchievementsScreen(), // достижения
       const ProfileScreen(),
     ];
     
@@ -56,7 +60,10 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: DarwinBottomBar(
         currentIndex: _currentIndex,
         onHomeTapped: (_) => _onTabSelected(0),
-        onInfoTapped: (_) => _onTabSelected(2),  // статистика
+        onRoutesTapped: (_) => _onTabSelected(1),
+        onStatsTapped: (_) => _onTabSelected(2),
+        onAchievementsTapped: (_) => _onTabSelected(3),
+        onProfileTapped: (_) => _onTabSelected(4),
       ),
     );
   }

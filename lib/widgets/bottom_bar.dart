@@ -4,18 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:darwin_walk/screens/ready_routes_screen.dart';
 import 'package:darwin_walk/screens/statistics/statistics_screen.dart';
 import 'package:darwin_walk/screens/profile_screen.dart';
+import 'package:darwin_walk/screens/achievements/achievements_screen.dart';
 import 'package:darwin_walk/data/daily_steps_repository.dart';
 
 class DarwinBottomBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int>? onHomeTapped;
-  final ValueChanged<int>? onInfoTapped;
+  final ValueChanged<int>? onRoutesTapped;
+  final ValueChanged<int>? onStatsTapped;
+  final ValueChanged<int>? onAchievementsTapped;
+  final ValueChanged<int>? onProfileTapped;
 
   const DarwinBottomBar({
     super.key,
     required this.currentIndex,
     this.onHomeTapped,
-    this.onInfoTapped,
+    this.onRoutesTapped,
+    this.onStatsTapped,
+    this.onAchievementsTapped,
+    this.onProfileTapped,
   });
 
   @override
@@ -43,6 +50,7 @@ class DarwinBottomBar extends StatelessWidget {
               }
             },
           ),
+          
           // Маршруты -> экран выбора маршрутов
           IconButton(
             icon: Icon(
@@ -51,14 +59,19 @@ class DarwinBottomBar extends StatelessWidget {
               color: currentIndex == 1 ? Colors.black : Colors.black54,
             ),
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (_) => const ReadyRoutesScreen(),
-                ),
-                (route) => false,
-              );
+              if (onRoutesTapped != null) {
+                onRoutesTapped!(1);
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (_) => const ReadyRoutesScreen(),
+                  ),
+                  (route) => false,
+                );
+              }
             },
           ),
+          
           // Статистика -> экран статистики
           IconButton(
             icon: Icon(
@@ -67,8 +80,8 @@ class DarwinBottomBar extends StatelessWidget {
               color: currentIndex == 2 ? Colors.black : Colors.black54,
             ),
             onPressed: () async {
-              if (onInfoTapped != null) {
-                onInfoTapped!(2);
+              if (onStatsTapped != null) {
+                onStatsTapped!(2);
               } else {
                 final stepsRepo = await DailyStepsRepository.getInstance();
                 if (context.mounted) {
@@ -82,20 +95,46 @@ class DarwinBottomBar extends StatelessWidget {
               }
             },
           ),
+          
+          // Достижения -> экран достижений
+          IconButton(
+            icon: Icon(
+              Icons.emoji_events_outlined,
+              size: 28,
+              color: currentIndex == 3 ? Colors.black : Colors.black54,
+            ),
+            onPressed: () {
+              if (onAchievementsTapped != null) {
+                onAchievementsTapped!(3);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AchievementsScreen(),
+                  ),
+                );
+              }
+            },
+          ),
+          
           // Профиль -> экран профиля
           IconButton(
             icon: Icon(
               Icons.person_outline,
               size: 28,
-              color: currentIndex == 3 ? Colors.black : Colors.black54,
+              color: currentIndex == 4 ? Colors.black : Colors.black54,
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
-                ),
-              );
+              if (onProfileTapped != null) {
+                onProfileTapped!(4);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              }
             },
           ),
         ],
