@@ -120,7 +120,7 @@ class StepTrackerService {
 
     debugPrint('👟 onStepCount: raw=$raw, last=$_lastRawSteps');
 
-    // 🔹 Первое событие: инициализируем
+    // Первое событие: инициализируем
     if (_lastRawSteps == null) {
       _lastRawSteps = raw;
       _lastEventDate = eventDate;
@@ -129,7 +129,7 @@ class StepTrackerService {
       return;
     }
 
-    // 🔹 Смена дня: сбрасываем счётчик
+    // Смена дня: сбрасываем счётчик
     if (_lastEventDate != null && !_isSameDay(_lastEventDate!, eventDate)) {
       debugPrint('📅 Day changed, resetting counter');
       _lastRawSteps = raw;
@@ -138,26 +138,31 @@ class StepTrackerService {
       return;
     }
 
-    // 🔹 Вычисляем дельту
+    // Вычисляем дельту
     final delta = raw - _lastRawSteps!;
     _lastRawSteps = raw;
     _lastEventDate = eventDate;
-    
-    // 🔹 Сохраняем после каждого события (на случай краша)
     _saveState();
 
     debugPrint('📊 delta=$delta');
     if (delta <= 0) return;
 
-    final currentRouteId = CurrentRouteManager.instance.currentRouteId ?? 'free_walk';
+    // ✅ Исправление: обрабатываем null
+    final currentRouteId = CurrentRouteManager.instance.currentRouteId;
+    final routeId = currentRouteId ?? 'free_walk';
+    
+    print('📍 СОХРАНЕНИЕ ШАГОВ:');
+    print('   routeId из CurrentRouteManager: $currentRouteId');
+    print('   итоговый routeId: $routeId');
+    print('   delta: $delta'); 
+    debugPrint('📍 Saving steps for route: $routeId');
     
     _repository.addSteps(
       date: timestamp,
       stepsDelta: delta,
-      routeId: currentRouteId,
+      routeId: routeId,
     );
   }
-
   void _onPedestrianStatus(PedestrianStatus status) {
     debugPrint('🚶 pedestrian status = $status');
   }

@@ -1,6 +1,8 @@
 // lib/screens/ready_routes_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 
 import 'jurassic_screen.dart';
 import 'whale_screen.dart';
@@ -10,6 +12,10 @@ import '../widgets/bottom_bar.dart';
 import '../data/repositories/route_state_repository.dart';
 import '../data/daily_steps_repository.dart';
 import '../models/route_progress.dart';
+import '../models/jurassic.dart';
+import '../models/whale.dart';
+import '../models/cenozoic.dart';
+import '../services/current_route_manager.dart';
 
 class ReadyRoutesScreen extends StatefulWidget {
   const ReadyRoutesScreen({super.key});
@@ -20,6 +26,7 @@ class ReadyRoutesScreen extends StatefulWidget {
 
 class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
   late PageController _pageController;
+  int _currentPageIndex = 0;
   
   RouteStateRepository? _routeRepo;
   Set<String> _completedRoutes = {};
@@ -34,7 +41,6 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'subtitle': 'Погружаемся в мир динозавров',
       'image': 'assets/images/routes/jurassic.png',
       'bgColor': const Color(0xFF344651),
-      'totalSteps': 18500,
     },
     {
       'id': 'whale',
@@ -42,7 +48,6 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'subtitle': 'Как оленёнок стал китом',
       'image': 'assets/images/routes/whale.png',
       'bgColor': const Color.fromARGB(255, 235, 183, 25),
-      'totalSteps': 15000,
     },
     {
       'id': 'cenozoic',
@@ -50,7 +55,6 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'subtitle': 'Динозавры среди нас',
       'image': 'assets/images/routes/Ichthyornis.png',
       'bgColor': const Color.fromARGB(255, 124, 207, 208),
-      'totalSteps': 12000,
     },
     {
       'id': 'mammals',
@@ -58,7 +62,6 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'subtitle': 'Исследуем разнообразие зверей',
       'image': 'assets/images/routes/mammals.png',
       'bgColor': const Color(0xFF5A4E7C),
-      'totalSteps': 20000,
     },
     {
       'id': 'cambrian',
@@ -66,7 +69,6 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'subtitle': 'Всплеск жизни в океанах',
       'image': 'assets/images/routes/cambrian.png',
       'bgColor': const Color(0xFF6C4C4C),
-      'totalSteps': 10000,
     },
   ];
 
@@ -80,41 +82,62 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
   @override
   void dispose() {
     _pageController.dispose();
-    // ✅ Убираем close() - больше не нужен
-    // _routeRepo?.close();
     super.dispose();
+  }
+
+  Future<int> _getTotalStepsFromJson(String routeId) async {
+    try {
+      switch (routeId) {
+        case 'jurassic':
+          final jsonString = await rootBundle.loadString('assets/data/jurassic.json');
+          final jsonMap = json.decode(jsonString);
+          final data = JurassicData.fromJson(jsonMap);
+          return data.totalSteps;
+        case 'whale':
+          final jsonString = await rootBundle.loadString('assets/data/whale.json');
+          final jsonMap = json.decode(jsonString);
+          final data = WhaleData.fromJson(jsonMap);
+          return data.totalSteps;
+        case 'cenozoic':
+          final jsonString = await rootBundle.loadString('assets/data/cenozoic.json');
+          final jsonMap = json.decode(jsonString);
+          final data = CenozoicData.fromJson(jsonMap);
+          return data.totalSteps;
+        default:
+          return 0;
+      }
+    } catch (e) {
+      debugPrint('Error loading total steps for $routeId: $e');
+      return 0;
+    }
   }
 
   Future<void> _loadRouteStates() async {
     setState(() => _isLoading = true);
     
     try {
-      // ✅ Используем getInstance() вместо конструктора
       _routeRepo = await RouteStateRepository.getInstance();
       
       final completed = await _routeRepo!.getCompletedRouteIds();
       final active = await _routeRepo!.getActiveRoute();
       
-      // ✅ Используем getInstance() вместо init()
       final stepsRepo = await DailyStepsRepository.getInstance();
       Map<String, int> progress = {};
       
       for (final route in routes) {
         final routeId = route['id'] as String;
         final totalSteps = await stepsRepo.getTotalStepsForRoute(routeId);
-        final maxSteps = route['totalSteps'] as int;
+        final maxSteps = await _getTotalStepsFromJson(routeId);
         
         if (maxSteps > 0) {
-          int percent = ((totalSteps / maxSteps) * 100).toInt();
+          int percent = ((totalSteps / maxSteps) * 100).ceil();
+          if (totalSteps > 0 && percent == 0) percent = 1;
           percent = percent.clamp(0, 100);
           progress[routeId] = percent;
         } else {
           progress[routeId] = 0;
         }
       }
-      
-      // ✅ Убираем close() - больше не нужно
-      // await stepsRepo.close();
       
       if (mounted) {
         setState(() {
@@ -138,40 +161,30 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
     final isCompleted = _completedRoutes.contains(routeId);
     final isActive = _activeRoute?.routeId == routeId;
     
-    // Если маршрут уже пройден
     if (isCompleted) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Этот маршрут уже пройден! 🎉'),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Этот маршрут уже пройден! 🎉'), backgroundColor: Colors.green),
         );
       }
       return;
     }
     
-    // Если маршрут активен — просто открываем
     if (isActive) {
       _openRouteScreen(index);
       return;
     }
     
-    // Если выбран другой активный маршрут
     if (_activeRoute != null) {
       final shouldSwitch = await _showSwitchRouteDialog();
       if (shouldSwitch != true) return;
-      
       await _routeRepo?.clearActiveRoute();
+      CurrentRouteManager.instance.stopRoute();
     }
     
-    // Устанавливаем новый активный маршрут
     await _routeRepo?.setActiveRoute(routeId);
-    
-    // Обновляем состояние
+    CurrentRouteManager.instance.startRoute(routeId);
     await _loadRouteStates();
-    
-    // Открываем маршрут
     _openRouteScreen(index);
   }
   
@@ -180,23 +193,10 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Сменить маршрут?'),
-        content: Text(
-          'Вы уже проходите другой маршрут. '
-          'Прогресс по нему сохранится, но активным станет новый маршрут.\n\n'
-          'Продолжить?',
-        ),
+        content: const Text('Вы уже проходите другой маршрут. Прогресс по нему сохранится.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Отмена'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.green,
-            ),
-            child: const Text('Сменить'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Отмена')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Сменить')),
         ],
       ),
     );
@@ -205,15 +205,9 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
   void _openRouteScreen(int index) {
     Widget screen;
     switch (index) {
-      case 0:
-        screen = const JurassicScreen();
-        break;
-      case 1:
-        screen = const WhaleScreen();
-        break;
-      case 2:
-        screen = const CenozoicScreen();
-        break;
+      case 0: screen = const JurassicScreen(); break;
+      case 1: screen = const WhaleScreen(); break;
+      case 2: screen = const CenozoicScreen(); break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Этот маршрут пока в разработке!')),
@@ -221,11 +215,7 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
         return;
     }
     
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => screen),
-    ).then((_) {
-      // Обновляем состояние после возврата
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen)).then((_) {
       _loadRouteStates();
     });
   }
@@ -266,16 +256,19 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
                 ),
               ),
             ),
-            Expanded(
+            SizedBox(
+              height: 420 + 80,
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : PageView.builder(
                       controller: _pageController,
                       itemCount: routes.length,
+                      onPageChanged: (index) => setState(() => _currentPageIndex = index),
                       itemBuilder: (context, index) {
                         final route = routes[index];
                         final routeId = route['id'] as String;
-                        final isActive = _activeRoute?.routeId == routeId;
+                        final isActive = index == _currentPageIndex;
+                        final isRouteSelected = _activeRoute?.routeId == routeId;
                         final isCompleted = _completedRoutes.contains(routeId);
                         final progressPercent = _routeProgress[routeId];
                         
@@ -288,7 +281,7 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
                             color: route['bgColor'] as Color,
                             isActive: isActive,
                             isCompleted: isCompleted,
-                            progressPercent: progressPercent,
+                            progressPercent: isRouteSelected ? progressPercent : null,
                             onTap: () => _navigateToRoute(index),
                           ),
                         );

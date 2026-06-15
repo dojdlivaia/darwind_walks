@@ -19,9 +19,9 @@ import '../widgets/bottom_bar.dart';
 import '../widgets/breathing_gradient_background.dart';
 import '../widgets/creature_blueprint.dart';
 import 'jurassic_vertical_timeline_screen.dart';
-import '../main.dart';
 import '../data/repositories/route_state_repository.dart';
 import '../data/daily_steps_repository.dart';
+import '../services/current_route_manager.dart';
 
 class JurassicScreen extends StatefulWidget {
   const JurassicScreen({super.key});
@@ -64,9 +64,18 @@ class _JurassicScreenState extends State<JurassicScreen> {
   }
 
   Future<void> _loadRouteStatus() async {
-    _routeRepo = RouteStateRepository();
+    _routeRepo = await RouteStateRepository.getInstance();
     final isCompleted = await _routeRepo!.isRouteCompleted('jurassic');
     final activeRoute = await _routeRepo!.getActiveRoute();
+    
+    // ✅ ДОБАВИТЬ: синхронизация CurrentRouteManager
+    if (activeRoute?.routeId == 'jurassic' && !isCompleted) {
+      CurrentRouteManager.instance.startRoute('jurassic');
+      debugPrint('📍 JurassicScreen: синхронизирован CurrentRouteManager (активен)');
+    } else if (CurrentRouteManager.instance.currentRouteId == 'jurassic') {
+      CurrentRouteManager.instance.stopRoute();
+      debugPrint('📍 JurassicScreen: CurrentRouteManager остановлен');
+    }
     
     if (mounted) {
       setState(() {
@@ -74,7 +83,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
       });
     }
     
-    // Если маршрут уже пройден, блокируем добавление шагов
     if (!isCompleted) {
       _loadStepsFromRepository();
     }
@@ -96,7 +104,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
       if (mounted) {
         setState(() {
           // Суммируем все шаги за период
-          _userSteps = stats.fold(0, (sum, stat) => sum + stat.totalSteps);
+          _userSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['jurassic'] ?? 0));
         });
         
         // Проверяем, не завершён ли маршрут
@@ -169,45 +177,13 @@ class _JurassicScreenState extends State<JurassicScreen> {
     });
   }
 
-  void _simulateSteps() {
-    if (_data == null || _isRouteCompleted) return;
-
-    setState(() {
-      _userSteps += 500;
-      if (_userSteps > _data!.totalSteps) {
-        _userSteps = _data!.totalSteps;
-      }
-
-      final latestUnlockedNode = _findLastUnlockedNode(
-        _data!.nodes,
-        _userSteps,
-      );
-
-      if (latestUnlockedNode.cumulativeSteps >
-          (_selectedNode?.cumulativeSteps ?? 0)) {
-        _selectedNode = latestUnlockedNode;
-      }
-
-      if (_selectedNode!.species == 'Компсогнат' && !_hasReachedFinal) {
-        _hasReachedFinal = true;
-        _showFinalConfetti = true;
-
-        Future.delayed(const Duration(seconds: 6), () {
-          if (!mounted) return;
-          setState(() {
-            _showFinalConfetti = false;
-          });
-        });
-      }
-    });
-  }
-
+  
   Future<void> _completeRoute() async {
     if (_data == null) return;
     
     // Проверяем, пройден ли маршрут
     if (_userSteps < _data!.totalSteps) {
-      final notCompleted = await showDialog<bool>(
+      await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Маршрут не пройден'),
@@ -460,7 +436,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
             Container(
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 shape: BoxShape.circle,
               ),
               child: IconButton(

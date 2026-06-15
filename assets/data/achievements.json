@@ -1,0 +1,690 @@
+{
+  "achievements": [
+    {
+      "id": "first_steps",
+      "title": "Первые шаги",
+      "description": "Пройдите 100 шагов",
+      "category": "steps",
+      "tier": "bronze",
+      "icon": "assets/images/badges/first_steps.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 100
+      },
+      "isSecret": false,
+      "xpReward": 10
+    },
+    {
+      "id": "walker",
+      "title": "Ходок",
+      "description": "Пройдите 5 000 шагов",
+      "category": "steps",
+      "tier": "silver",
+      "icon": "assets/images/badges/walker.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 5000
+      },
+      "isSecret": false,
+      "xpReward": 25
+    },
+    {
+      "id": "traveler",
+      "title": "Путешественник",
+      "description": "Пройдите 20 000 шагов",
+      "category": "steps",
+      "tier": "gold",
+      "icon": "assets/images/badges/traveler.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 20000
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "world_explorer",
+      "title": "Исследователь миров",
+      "description": "Пройдите 50 000 шагов",
+      "category": "steps",
+      "tier": "gold",
+      "icon": "assets/images/badges/world_explorer.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 50000
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "evolution_legend",
+      "title": "Легенда эволюции",
+      "description": "Пройдите 100 000 шагов",
+      "category": "steps",
+      "tier": "diamond",
+      "icon": "assets/images/badges/evolution_legend.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 100000
+      },
+      "isSecret": false,
+      "xpReward": 250
+    },
+    {
+      "id": "early_bird",
+      "title": "Ранняя пташка",
+      "description": "Пройдите 3 000 шагов до 12:00",
+      "category": "steps",
+      "tier": "silver",
+      "icon": "assets/images/badges/early_bird.png",
+      "condition": {
+        "type": "morningSteps",
+        "value": 3000
+      },
+      "isSecret": false,
+      "xpReward": 30
+    },
+    {
+      "id": "day_wanderer",
+      "title": "Дневной странник",
+      "description": "Пройдите 5 000 шагов за один день",
+      "category": "steps",
+      "tier": "bronze",
+      "icon": "assets/images/badges/day_wanderer.png",
+      "condition": {
+        "type": "dailySteps",
+        "value": 5000
+      },
+      "isSecret": false,
+      "xpReward": 20
+    },
+    {
+      "id": "night_walker",
+      "title": "Ночной ходок",
+      "description": "Пройдите 1 000 шагов после 22:00",
+      "category": "steps",
+      "tier": "bronze",
+      "icon": "assets/images/badges/night_walker.png",
+      "condition": {
+        "type": "nightSteps",
+        "value": 1000
+      },
+      "isSecret": false,
+      "xpReward": 15
+    },
+    {
+      "id": "day_marathoner",
+      "title": "Марафонец дня",
+      "description": "Пройдите 10 000 шагов за один день",
+      "category": "steps",
+      "tier": "gold",
+      "icon": "assets/images/badges/day_marathoner.png",
+      "condition": {
+        "type": "dailySteps",
+        "value": 10000
+      },
+      "isSecret": false,
+      "xpReward": 75
+    },
+    {
+      "id": "first_day",
+      "title": "Первый день",
+      "description": "Откройте приложение первый раз",
+      "category": "consistency",
+      "tier": "bronze",
+      "icon": "assets/images/badges/first_day.png",
+      "condition": {
+        "type": "firstLaunch",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 10
+    },
+    {
+      "id": "weekly_researcher",
+      "title": "Недельный исследователь",
+      "description": "Открывайте приложение 7 дней подряд",
+      "category": "consistency",
+      "tier": "silver",
+      "icon": "assets/images/badges/weekly_researcher.png",
+      "condition": {
+        "type": "consecutiveDays",
+        "value": 7
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "loyal_paleontologist",
+      "title": "Преданный палеонтолог",
+      "description": "Открывайте приложение 14 дней подряд",
+      "category": "consistency",
+      "tier": "gold",
+      "icon": "assets/images/badges/loyal_paleontologist.png",
+      "condition": {
+        "type": "consecutiveDays",
+        "value": 14
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "habit_evolution",
+      "title": "Эволюция привычки",
+      "description": "Открывайте приложение 30 дней подряд",
+      "category": "consistency",
+      "tier": "diamond",
+      "icon": "assets/images/badges/habit_evolution.png",
+      "condition": {
+        "type": "consecutiveDays",
+        "value": 30
+      },
+      "isSecret": false,
+      "xpReward": 200
+    },
+    {
+      "id": "legendary_traveler",
+      "title": "Легендарный странник",
+      "description": "Открывайте приложение 90 дней подряд",
+      "category": "consistency",
+      "tier": "diamond",
+      "icon": "assets/images/badges/legendary_traveler.png",
+      "condition": {
+        "type": "consecutiveDays",
+        "value": 90
+      },
+      "isSecret": false,
+      "xpReward": 500
+    },
+    {
+      "id": "weekend_warrior",
+      "title": "Выходной воин",
+      "description": "Пройдите шаги в субботу и воскресенье",
+      "category": "consistency",
+      "tier": "bronze",
+      "icon": "assets/images/badges/weekend_warrior.png",
+      "condition": {
+        "type": "weekendDays",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 25
+    },
+    {
+      "id": "stability",
+      "title": "Стабильность",
+      "description": "5 дней с 5 000+ шагов",
+      "category": "consistency",
+      "tier": "silver",
+      "icon": "assets/images/badges/stability.png",
+      "condition": {
+        "type": "daysWithSteps",
+        "value": 5000
+      },
+      "isSecret": false,
+      "xpReward": 40
+    },
+    {
+      "id": "first_journey",
+      "title": "Первое путешествие",
+      "description": "Завершите свой первый маршрут",
+      "category": "routes",
+      "tier": "bronze",
+      "icon": "assets/images/badges/first_journey.png",
+      "condition": {
+        "type": "routesCompleted",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "experienced_traveler",
+      "title": "Опытный путешественник",
+      "description": "Завершите 3 маршрута",
+      "category": "routes",
+      "tier": "silver",
+      "icon": "assets/images/badges/experienced_traveler.png",
+      "condition": {
+        "type": "routesCompleted",
+        "value": 3
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "world_collector",
+      "title": "Коллекционер миров",
+      "description": "Завершите все маршруты",
+      "category": "routes",
+      "tier": "diamond",
+      "icon": "assets/images/badges/world_collector.png",
+      "condition": {
+        "type": "allRoutesCompleted",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 300
+    },
+    {
+      "id": "speed_evolution",
+      "title": "Скоростной эволюционер",
+      "description": "Завершите маршрут за 7 дней",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/speed_evolution.png",
+      "condition": {
+        "type": "routeInDays",
+        "value": 7
+      },
+      "isSecret": false,
+      "xpReward": 150
+    },
+    {
+      "id": "speed_master",
+      "title": "Мастер скорости",
+      "description": "Завершите 3 маршрута за 30 дней",
+      "category": "routes",
+      "tier": "diamond",
+      "icon": "assets/images/badges/speed_master.png",
+      "condition": {
+        "type": "routesInDays",
+        "value": 3
+      },
+      "isSecret": false,
+      "xpReward": 250
+    },
+    {
+      "id": "paleontologist",
+      "title": "Палеонтолог",
+      "description": "Завершите маршрут «Юрский период»",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/paleontologist.png",
+      "condition": {
+        "type": "routeCompleted",
+        "value": "jurassic"
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "oceanographer",
+      "title": "Океанолог",
+      "description": "Завершите маршрут «Назад в океан»",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/oceanographer.png",
+      "condition": {
+        "type": "routeCompleted",
+        "value": "whale"
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "ornithologist",
+      "title": "Орнитолог",
+      "description": "Завершите маршрут «От раптора до колибри»",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/ornithologist.png",
+      "condition": {
+        "type": "routeCompleted",
+        "value": "cenozoic"
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "zoologist",
+      "title": "Зоолог",
+      "description": "Завершите маршрут «Мир млекопитающих»",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/zoologist.png",
+      "condition": {
+        "type": "routeCompleted",
+        "value": "mammals"
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "cambrian_biologist",
+      "title": "Биолог кембрия",
+      "description": "Завершите маршрут «Кембрийский взрыв»",
+      "category": "routes",
+      "tier": "gold",
+      "icon": "assets/images/badges/cambrian_biologist.png",
+      "condition": {
+        "type": "routeCompleted",
+        "value": "cambrian"
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "curious",
+      "title": "Любопытный",
+      "description": "Откройте 5 существ",
+      "category": "exploration",
+      "tier": "bronze",
+      "icon": "assets/images/badges/curious.png",
+      "condition": {
+        "type": "creaturesOpened",
+        "value": 5
+      },
+      "isSecret": false,
+      "xpReward": 30
+    },
+    {
+      "id": "researcher",
+      "title": "Исследователь",
+      "description": "Откройте 10 существ",
+      "category": "exploration",
+      "tier": "silver",
+      "icon": "assets/images/badges/researcher.png",
+      "condition": {
+        "type": "creaturesOpened",
+        "value": 10
+      },
+      "isSecret": false,
+      "xpReward": 60
+    },
+    {
+      "id": "encyclopedist",
+      "title": "Энциклопедист",
+      "description": "Откройте всех существ в маршруте",
+      "category": "exploration",
+      "tier": "gold",
+      "icon": "assets/images/badges/encyclopedist.png",
+      "condition": {
+        "type": "allCreaturesInRoute",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "attentive_reader",
+      "title": "Внимательный читатель",
+      "description": "Прочитайте все факты в маршруте",
+      "category": "exploration",
+      "tier": "silver",
+      "icon": "assets/images/badges/attentive_reader.png",
+      "condition": {
+        "type": "allFactsRead",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "archaeologist",
+      "title": "Археолог",
+      "description": "Найдите все чекпоинты в маршруте",
+      "category": "exploration",
+      "tier": "gold",
+      "icon": "assets/images/badges/archaeologist.png",
+      "condition": {
+        "type": "allCheckpointsFound",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 80
+    },
+    {
+      "id": "record_holder",
+      "title": "Рекордсмен дня",
+      "description": "Превысите свой дневной рекорд",
+      "category": "records",
+      "tier": "bronze",
+      "icon": "assets/images/badges/record_holder.png",
+      "condition": {
+        "type": "dailyRecord",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 40
+    },
+    {
+      "id": "double_record",
+      "title": "Двойной рекорд",
+      "description": "3 дня подряд улучшайте результат",
+      "category": "records",
+      "tier": "gold",
+      "icon": "assets/images/badges/double_record.png",
+      "condition": {
+        "type": "consecutiveRecords",
+        "value": 3
+      },
+      "isSecret": false,
+      "xpReward": 100
+    },
+    {
+      "id": "early_bird_route",
+      "title": "Ранний птах",
+      "description": "Начните маршрут до 8:00",
+      "category": "records",
+      "tier": "bronze",
+      "icon": "assets/images/badges/early_bird_route.png",
+      "condition": {
+        "type": "morningRoute",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 25
+    },
+    {
+      "id": "night_evolution",
+      "title": "Ночной эволюционер",
+      "description": "Завершите маршрут после 23:00",
+      "category": "records",
+      "tier": "silver",
+      "icon": "assets/images/badges/night_evolution.png",
+      "condition": {
+        "type": "nightRoute",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "sprinter",
+      "title": "Спринтер",
+      "description": "Пройдите 2 000 шагов за 15 минут",
+      "category": "records",
+      "tier": "gold",
+      "icon": "assets/images/badges/sprinter.png",
+      "condition": {
+        "type": "stepsInMinutes",
+        "value": 2000
+      },
+      "isSecret": false,
+      "xpReward": 75
+    },
+    {
+      "id": "new_year_start",
+      "title": "Новогодний старт",
+      "description": "Начните маршрут в январе",
+      "category": "seasonal",
+      "tier": "silver",
+      "icon": "assets/images/badges/new_year_start.png",
+      "condition": {
+        "type": "routeInMonth",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "spring_traveler",
+      "title": "Весенний странник",
+      "description": "Пройдите 10 000 шагов весной",
+      "category": "seasonal",
+      "tier": "silver",
+      "icon": "assets/images/badges/spring_traveler.png",
+      "condition": {
+        "type": "stepsInSeason",
+        "value": 10000
+      },
+      "isSecret": false,
+      "xpReward": 60
+    },
+    {
+      "id": "summer_researcher",
+      "title": "Летний исследователь",
+      "description": "Завершите маршрут летом",
+      "category": "seasonal",
+      "tier": "gold",
+      "icon": "assets/images/badges/summer_researcher.png",
+      "condition": {
+        "type": "routeInSeason",
+        "value": 1
+      },
+      "isSecret": false,
+      "xpReward": 80
+    },
+    {
+      "id": "autumn_collector",
+      "title": "Осенний коллекционер",
+      "description": "Откройте 5 существ осенью",
+      "category": "seasonal",
+      "tier": "silver",
+      "icon": "assets/images/badges/autumn_collector.png",
+      "condition": {
+        "type": "creaturesInSeason",
+        "value": 5
+      },
+      "isSecret": false,
+      "xpReward": 50
+    },
+    {
+      "id": "app_birthday",
+      "title": "День рождения приложения",
+      "description": "Войдите в особый день",
+      "category": "seasonal",
+      "tier": "diamond",
+      "icon": "assets/images/badges/app_birthday.png",
+      "condition": {
+        "type": "specialDate",
+        "value": "2026-06-16"
+      },
+      "isSecret": false,
+      "xpReward": 200
+    },
+    {
+      "id": "night_watch",
+      "title": "Ночной дозор",
+      "description": "Откройте приложение 3 ночи подряд",
+      "category": "secret",
+      "tier": "diamond",
+      "icon": "assets/images/badges/night_watch.png",
+      "condition": {
+        "type": "nightSessions",
+        "value": 3
+      },
+      "isSecret": true,
+      "xpReward": 150
+    },
+    {
+      "id": "fast_as_compsognathus",
+      "title": "Быстрый как компсогнат",
+      "description": "Пройдите 1 000 шагов за 10 минут",
+      "category": "secret",
+      "tier": "gold",
+      "icon": "assets/images/badges/fast_as_compsognathus.png",
+      "condition": {
+        "type": "stepsInMinutes",
+        "value": 1000
+      },
+      "isSecret": true,
+      "xpReward": 100
+    },
+    {
+      "id": "slow_as_triceratops",
+      "title": "Медленный как трицератопс",
+      "description": "Идите 30 минут с <500 шагов",
+      "category": "secret",
+      "tier": "bronze",
+      "icon": "assets/images/badges/slow_as_triceratops.png",
+      "condition": {
+        "type": "slowWalk",
+        "value": 500
+      },
+      "isSecret": true,
+      "xpReward": 30
+    },
+    {
+      "id": "secret_evolutionist",
+      "title": "Тайный эволюционер",
+      "description": "Найдите скрытое существо",
+      "category": "secret",
+      "tier": "diamond",
+      "icon": "assets/images/badges/secret_evolutionist.png",
+      "condition": {
+        "type": "secretCreature",
+        "value": 1
+      },
+      "isSecret": true,
+      "xpReward": 200
+    },
+    {
+      "id": "pioneer",
+      "title": "Первооткрыватель",
+      "description": "Будьте среди первых 100 пользователей",
+      "category": "secret",
+      "tier": "diamond",
+      "icon": "assets/images/badges/pioneer.png",
+      "condition": {
+        "type": "earlyUser",
+        "value": 100
+      },
+      "isSecret": true,
+      "xpReward": 500
+    },
+    {
+      "id": "evolution_zen",
+      "title": "Дзен эволюции",
+      "description": "Не закрывайте приложение 10 минут",
+      "category": "secret",
+      "tier": "silver",
+      "icon": "assets/images/badges/evolution_zen.png",
+      "condition": {
+        "type": "appOpenMinutes",
+        "value": 10
+      },
+      "isSecret": true,
+      "xpReward": 50
+    },
+    {
+      "id": "perfect_week",
+      "title": "Идеальная неделя",
+      "description": "Пройдите 5 000+ шагов каждый день недели",
+      "category": "consistency",
+      "tier": "gold",
+      "icon": "assets/images/badges/perfect_week.png",
+      "condition": {
+        "type": "perfectWeek",
+        "value": 5000
+      },
+      "isSecret": false,
+      "xpReward": 150
+    },
+    {
+      "id": "marathon_total",
+      "title": "Марафонец",
+      "description": "Пройдите 42 000 шагов всего",
+      "category": "steps",
+      "tier": "gold",
+      "icon": "assets/images/badges/marathon_total.png",
+      "condition": {
+        "type": "totalSteps",
+        "value": 42000
+      },
+      "isSecret": false,
+      "xpReward": 100
+    }
+  ]
+}

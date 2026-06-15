@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ReadyRoutesScreen()),
+                  MaterialPageRoute(builder: (_) => ReadyRoutesScreen()),
                 );
               },
               child: const Text(
@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
               ),
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const CustomRouteScreen()),
+                  MaterialPageRoute(builder: (_) => CustomRouteScreen()),
                 );
               },
               child: const Text(

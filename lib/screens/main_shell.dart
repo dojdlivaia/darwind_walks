@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:darwin_walk/screens/home_screen.dart';
 import 'package:darwin_walk/screens/ready_routes_screen.dart';
-import 'package:darwin_walk/screens/jurassic_screen.dart';
+import 'package:darwin_walk/screens/statistics/statistics_screen.dart';
 import 'package:darwin_walk/screens/profile_screen.dart';
+import 'package:darwin_walk/data/daily_steps_repository.dart';
 import '../widgets/bottom_bar.dart';
 
 class MainShell extends StatefulWidget {
@@ -15,13 +15,33 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
+  
+  late final List<Widget> _pages;
+  Widget? _statisticsScreen;
 
-  late final List<Widget> _pages = [
-    const HomeScreen(),
-    const ReadyRoutesScreen(),
-    const JurassicScreen(),
-    const ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    
+    _pages = [
+      const HomeScreen(),
+      const ReadyRoutesScreen(),
+      const SizedBox(), // временная заглушка для статистики
+      const ProfileScreen(),
+    ];
+    
+    _initStatisticsScreen();
+  }
+
+  Future<void> _initStatisticsScreen() async {
+    final stepsRepo = await DailyStepsRepository.getInstance();
+    if (mounted) {
+      setState(() {
+        _statisticsScreen = StatisticsScreen(repository: stepsRepo);
+        _pages[2] = _statisticsScreen!;
+      });
+    }
+  }
 
   void _onTabSelected(int index) {
     if (_currentIndex == index) return;
@@ -31,12 +51,12 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // или любой другой цвет фона
+      backgroundColor: Colors.white,
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: DarwinBottomBar(
         currentIndex: _currentIndex,
         onHomeTapped: (_) => _onTabSelected(0),
-        onInfoTapped: (_) => _onTabSelected(1),
+        onInfoTapped: (_) => _onTabSelected(2),  // статистика
       ),
     );
   }

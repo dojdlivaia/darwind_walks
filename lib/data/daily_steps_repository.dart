@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/foundation.dart';
 
 class DailyStepsStat {
   DailyStepsStat({
@@ -226,15 +227,28 @@ class DailyStepsRepository {
   }
 
   Future<int> getTotalStepsForRoute(String routeId) async {
+    debugPrint('🔍 getTotalStepsForRoute called for: $routeId');
+    
     final allStats = await getRange(
       from: DateTime(2024, 1, 1),
       to: DateTime.now(),
     );
     
-    return allStats.fold<int>(
-      0,
-      (sum, stat) => sum + (stat.stepsByRoute[routeId] ?? 0),
-    );
+    int total = 0;
+    
+    if (allStats.isEmpty) {
+      debugPrint('⚠️ No stats found in database');
+      return 0;
+    }
+    
+    for (final stat in allStats) {
+      final stepsForRoute = stat.stepsByRoute[routeId] ?? 0;
+      debugPrint('   📅 ${stat.date}: stepsForRoute[$routeId] = $stepsForRoute (total day: ${stat.totalSteps})');
+      total += stepsForRoute;
+    }
+    
+    debugPrint('📊 TOTAL steps for $routeId: $total');
+    return total;
   }
 
   Future<void> clearAll() async {

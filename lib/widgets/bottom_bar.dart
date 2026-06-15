@@ -1,9 +1,9 @@
 // lib/widgets/bottom_bar.dart
 
 import 'package:flutter/material.dart';
-import 'package:darwin_walk/screens/profile_screen.dart';
 import 'package:darwin_walk/screens/ready_routes_screen.dart';
 import 'package:darwin_walk/screens/statistics/statistics_screen.dart';
+import 'package:darwin_walk/screens/profile_screen.dart';
 import 'package:darwin_walk/data/daily_steps_repository.dart';
 
 class DarwinBottomBar extends StatelessWidget {
@@ -30,7 +30,7 @@ class DarwinBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Домой -> главный экран (ReadyRoutesScreen)
+          // Домой -> главный экран (HomeScreen)
           IconButton(
             icon: Icon(
               Icons.home_outlined,
@@ -38,40 +38,31 @@ class DarwinBottomBar extends StatelessWidget {
               color: currentIndex == 0 ? Colors.black : Colors.black54,
             ),
             onPressed: () {
-              // если родитель хочет сам обработать — даём ему шанс
               if (onHomeTapped != null) {
                 onHomeTapped!(0);
-              } else {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (_) => const ReadyRoutesScreen(),
-                  ),
-                  (route) => false,
-                );
               }
             },
           ),
-
-          // Профиль -> отдельный экран поверх текущей вкладки
+          // Маршруты -> экран выбора маршрутов
           IconButton(
             icon: Icon(
-              Icons.person_outline,
+              Icons.map_outlined,
               size: 28,
               color: currentIndex == 1 ? Colors.black : Colors.black54,
             ),
             onPressed: () {
-              Navigator.of(context).push(
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => const ProfileScreen(),
+                  builder: (_) => const ReadyRoutesScreen(),
                 ),
+                (route) => false,
               );
             },
           ),
-
-          // Info -> статистика
+          // Статистика -> экран статистики
           IconButton(
             icon: Icon(
-              Icons.info_outline,
+              Icons.bar_chart_outlined,
               size: 28,
               color: currentIndex == 2 ? Colors.black : Colors.black54,
             ),
@@ -79,18 +70,32 @@ class DarwinBottomBar extends StatelessWidget {
               if (onInfoTapped != null) {
                 onInfoTapped!(2);
               } else {
-                // ✅ Используем синглтон вместо глобальной переменной
                 final stepsRepo = await DailyStepsRepository.getInstance();
                 if (context.mounted) {
-                  Navigator.of(context).push(
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
-                      builder: (_) => StatisticsScreen(
-                        repository: stepsRepo,
-                      ),
+                      builder: (_) => StatisticsScreen(repository: stepsRepo),
                     ),
                   );
                 }
               }
+            },
+          ),
+          // Профиль -> экран профиля
+          IconButton(
+            icon: Icon(
+              Icons.person_outline,
+              size: 28,
+              color: currentIndex == 3 ? Colors.black : Colors.black54,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                ),
+              );
             },
           ),
         ],
