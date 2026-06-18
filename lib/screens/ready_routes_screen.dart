@@ -7,12 +7,14 @@ import 'dart:convert';
 import 'jurassic_screen.dart';
 import 'whale_screen.dart';
 import 'cenozoic_screen.dart';
+import 'mammal_screen.dart';
 import '../widgets/route_card.dart';
 import '../widgets/bottom_bar.dart';
 import '../data/repositories/route_state_repository.dart';
 import '../data/daily_steps_repository.dart';
 import '../models/route_progress.dart';
 import '../models/jurassic.dart';
+import '../models/mammal.dart';
 import '../models/whale.dart';
 import '../models/cenozoic.dart';
 import '../services/current_route_manager.dart';
@@ -61,7 +63,7 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       'title': 'Мир млекопитающих',
       'subtitle': 'Исследуем разнообразие зверей',
       'image': 'assets/images/routes/mammals.png',
-      'bgColor': const Color(0xFF5A4E7C),
+      'bgColor': const Color.fromARGB(255, 80, 152, 100),
     },
     {
       'id': 'cambrian',
@@ -103,6 +105,12 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
           final jsonMap = json.decode(jsonString);
           final data = CenozoicData.fromJson(jsonMap);
           return data.totalSteps;
+        case 'mammal':
+          final jsonString = await rootBundle.loadString('assets/data/mammal.json');
+          final jsonMap = json.decode(jsonString);
+          final data = MammalData.fromJson(jsonMap);
+          return data.totalSteps;
+
         default:
           return 0;
       }
@@ -208,6 +216,7 @@ class _ReadyRoutesScreenState extends State<ReadyRoutesScreen> {
       case 0: screen = const JurassicScreen(); break;
       case 1: screen = const WhaleScreen(); break;
       case 2: screen = const CenozoicScreen(); break;
+      case 3: screen = const MammalScreen();  break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Этот маршрут пока в разработке!')),

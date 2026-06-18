@@ -1,4 +1,4 @@
-// lib/screens/cenozoic_screen.dart
+// lib/screens/mammal_screen.dart
 
 import 'dart:async';
 import 'dart:convert';
@@ -6,13 +6,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../models/cenozoic.dart';
+import '../models/mammal.dart';
 import '../models/creature_info.dart';
 import '../widgets/evolution_progress_bar.dart';
 import '../widgets/bouncing_creature.dart';
 import '../widgets/bubbles_background.dart';
 import '../widgets/forest_leaves_background.dart';
 import '../widgets/rain_background.dart';
+import '../widgets/final_creature_intro.dart';
 import '../widgets/simple_confetti.dart';
 import '../widgets/bottom_bar.dart';
 import '../widgets/breathing_gradient_background.dart';
@@ -20,59 +21,79 @@ import '../widgets/creature_blueprint.dart';
 import '../data/repositories/route_state_repository.dart';
 import '../data/daily_steps_repository.dart';
 import '../services/current_route_manager.dart';
-import '../widgets/final_creature_intro.dart'; 
 
-class CenozoicScreen extends StatefulWidget {
-  const CenozoicScreen({super.key});
+class MammalScreen extends StatefulWidget {
+  const MammalScreen({super.key});
 
   @override
-  State<CenozoicScreen> createState() => _CenozoicScreenState();
+  State<MammalScreen> createState() => _MammalScreenState();
 }
 
-class _CenozoicScreenState extends State<CenozoicScreen> {
-  CenozoicData? _data;
+class _MammalScreenState extends State<MammalScreen> {
+  // ============================
+  // Данные маршрута
+  // ============================
+  MammalData? _data;
   bool _isLoading = true;
-
   bool _hasReachedFinal = false;
   bool _showFinalConfetti = false;
 
+  // ============================
+  // Прогресс пользователя
+  // ============================
   int _userSteps = 0;
-  CenozoicNode? _selectedNode;
+  MammalNode? _selectedNode;
   
   RouteStateRepository? _routeRepo;
   bool _isRouteCompleted = false;
 
+  // ============================
+  // Таймер для обновления UI
+  // ============================
+  Timer? _updateTimer;
+  bool _isUpdating = false;
+  static const Duration _updateInterval = Duration(seconds: 8);
+
+  // ============================
+  // Цвета фона
+  // ============================
   static const List<Color> _backgroundColors = [
-    Color(0xFF39452B),
-    Color(0xFF2F3A21),
-    Color(0xFF4C5A35),
-    Color(0xFF39452B),
+    Color(0xFF2D1B3D),
+    Color(0xFF4A2B5A),
+    Color(0xFF6B3F7A),
+    Color(0xFF2D1B3D),
   ];
 
+  // ============================
+  // Жизненный цикл
+  // ============================
   @override
   void initState() {
     super.initState();
     _loadData();
     _loadRouteStatus();
+    _startPeriodicUpdate();
   }
 
   @override
   void dispose() {
+    _updateTimer?.cancel();
     _routeRepo?.close();
     super.dispose();
   }
 
+  // ============================
+  // Загрузка статуса маршрута
+  // ============================
   Future<void> _loadRouteStatus() async {
     _routeRepo = await RouteStateRepository.getInstance();
-    final isCompleted = await _routeRepo!.isRouteCompleted('cenozoic');
+    final isCompleted = await _routeRepo!.isRouteCompleted('mammals');
     final activeRoute = await _routeRepo!.getActiveRoute();
     
-    if (activeRoute?.routeId == 'cenozoic' && !isCompleted) {
-      CurrentRouteManager.instance.startRoute('cenozoic');
-      debugPrint('📍 CenozoicScreen: синхронизирован CurrentRouteManager (активен)');
-    } else if (CurrentRouteManager.instance.currentRouteId == 'cenozoic') {
+    if (activeRoute?.routeId == 'mammals' && !isCompleted) {
+      CurrentRouteManager.instance.startRoute('mammals');
+    } else if (CurrentRouteManager.instance.currentRouteId == 'mammals') {
       CurrentRouteManager.instance.stopRoute();
-      debugPrint('📍 CenozoicScreen: CurrentRouteManager остановлен');
     }
     
     if (mounted) {
@@ -86,6 +107,9 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     }
   }
 
+  // ============================
+  // Загрузка шагов из БД
+  // ============================
   Future<void> _loadStepsFromRepository() async {
     try {
       final startDate = DateTime(2026, 1, 1);
@@ -99,13 +123,8 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
       
       if (mounted) {
         setState(() {
-          _userSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['cenozoic'] ?? 0));
-          if (_data != null && _data!.nodes.isNotEmpty) {
-                 final latestUnlocked = _findLastUnlockedNode(_data!.nodes, _userSteps);
-                 if (_selectedNode == null || _selectedNode!.cumulativeSteps < latestUnlocked.cumulativeSteps) {
-                   _selectedNode = latestUnlocked;
-                 }
-            }
+          _userSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['mammals'] ?? 0));
+          _updateSelectedNode();
         });
         _checkRouteCompletion();
       }
@@ -114,6 +133,62 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     }
   }
 
+  void _updateSelectedNode() {
+    if (_data == null || _data!.nodes.isEmpty) return;
+    final latestUnlocked = _findLastUnlockedNode(_data!.nodes, _userSteps);
+    if (_selectedNode == null || 
+        _selectedNode!.cumulativeSteps < latestUnlocked.cumulativeSteps) {
+      _selectedNode = latestUnlocked;
+    }
+  }
+
+  // ============================
+  // Периодическое обновление
+  // ============================
+  void _startPeriodicUpdate() {
+    _updateTimer?.cancel();
+    _updateTimer = Timer.periodic(_updateInterval, (timer) {
+      if (mounted && !_isUpdating) {
+        _refreshSteps();
+      }
+    });
+  }
+
+  Future<void> _refreshSteps() async {
+    if (_isUpdating) return;
+    _isUpdating = true;
+    
+    try {
+      final startDate = DateTime(2026, 1, 1);
+      final today = DateTime.now();
+      
+      final stepsRepo = await DailyStepsRepository.getInstance();
+      final stats = await stepsRepo.getRange(
+        from: startDate,
+        to: today,
+      );
+      
+      if (mounted) {
+        final newSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['mammals'] ?? 0));
+        
+        if (newSteps != _userSteps) {
+          setState(() {
+            _userSteps = newSteps;
+            _updateSelectedNode();
+          });
+          _checkRouteCompletion();
+        }
+      }
+    } catch (e) {
+      // Подавляем ошибки обновления для стабильности
+    } finally {
+      _isUpdating = false;
+    }
+  }
+
+  // ============================
+  // Проверка завершения маршрута
+  // ============================
   Future<void> _checkRouteCompletion() async {
     if (_data == null || _isRouteCompleted) return;
     
@@ -133,13 +208,16 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     }
   }
 
+  // ============================
+  // Загрузка данных маршрута
+  // ============================
   Future<void> _loadData() async {
     try {
       final String jsonString = await rootBundle.loadString(
-        'assets/data/cenozoic.json',
+        'assets/data/mammals.json',
       );
       final Map<String, dynamic> jsonMap = json.decode(jsonString);
-      final data = CenozoicData.fromJson(jsonMap);
+      final data = MammalData.fromJson(jsonMap);
 
       setState(() {
         _data = data;
@@ -149,13 +227,16 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
       
       _checkRouteCompletion();
     } catch (e) {
-      debugPrint('Error loading cenozoic data: $e');
+      debugPrint('Error loading mammal data: $e');
       setState(() => _isLoading = false);
     }
   }
 
-  CenozoicNode _findLastUnlockedNode(List<CenozoicNode> nodes, int steps) {
-    CenozoicNode result = nodes.first;
+  // ============================
+  // Логика навигации по узлам
+  // ============================
+  MammalNode _findLastUnlockedNode(List<MammalNode> nodes, int steps) {
+    MammalNode result = nodes.first;
     for (final node in nodes) {
       if (node.cumulativeSteps <= steps) {
         result = node;
@@ -166,16 +247,19 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     return result;
   }
 
-  bool _isNodeUnlocked(CenozoicNode node) {
+  bool _isNodeUnlocked(MammalNode node) {
     return node.cumulativeSteps <= _userSteps;
   }
 
-  void _onNodeSelected(CenozoicNode node) {
+  void _onNodeSelected(MammalNode node) {
     setState(() {
       _selectedNode = node;
     });
   }
 
+  // ============================
+  // Завершение маршрута
+  // ============================
   Future<void> _completeRoute() async {
     if (_data == null) return;
     
@@ -205,7 +289,7 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
       builder: (_) => AlertDialog(
         title: const Text('Завершить маршрут?'),
         content: const Text(
-          'Вы действительно хотите завершить маршрут "От раптора до колибри"?\n\n'
+          'Вы действительно хотите завершить маршрут "Мир млекопитающих"?\n\n'
           '✅ Маршрут будет отмечен как пройденный\n'
           '✅ Вы получите доступ к новым маршрутам\n'
           '❌ Это действие нельзя отменить',
@@ -227,19 +311,17 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     );
     
     if (shouldComplete == true && mounted) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
       
       try {
-        await _routeRepo?.markRouteCompleted('cenozoic');
+        await _routeRepo?.markRouteCompleted('mammals');
         await _routeRepo?.clearActiveRoute();
         CurrentRouteManager.instance.stopRoute();
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('🎉 Поздравляем! Маршрут "От раптора до колибри" завершён! 🎉'),
+              content: Text('🎉 Поздравляем! Маршрут "Мир млекопитающих" завершён! 🎉'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 3),
             ),
@@ -255,22 +337,23 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
               backgroundColor: Colors.red,
             ),
           );
-          setState(() {
-            _isLoading = false;
-          });
+          setState(() => _isLoading = false);
         }
       }
     }
   }
 
-  void _showBlueprint(CenozoicNode node) {
+  // ============================
+  // Детали существа
+  // ============================
+  void _showBlueprint(MammalNode node) {
     final creature = CreatureInfo(
       species: node.species,
       imageUrl: node.imageUrl,
-      lengthM: 0,  // cenozoic.json не содержит размеров
-      heightM: null,
-      weightKg: 0,
-      wingspanM: null,
+      lengthM: node.lengthM,
+      heightM: node.heightM,
+      weightKg: node.weightKg,
+      wingspanM: node.wingspanM,
     );
 
     showModalBottomSheet(
@@ -294,6 +377,9 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     );
   }
 
+  // ============================
+  // Виджеты отображения существ
+  // ============================
   Widget _buildLockedImage(Widget image) {
     return ColorFiltered(
       colorFilter: const ColorFilter.mode(Color(0xFF27301F), BlendMode.srcATop),
@@ -318,7 +404,7 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     );
   }
 
-  Widget _buildCreatureImage(CenozoicNode node) {
+  Widget _buildCreatureImage(MammalNode node) {
     final bool isUnlocked = _isNodeUnlocked(node);
     final baseImage = _buildSizedImage(node.imageUrl, isUnlocked);
 
@@ -332,8 +418,8 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
       child: baseImage,
     );
 
-    // Для финального узла (колибри) добавляем специальную анимацию
-    if (node.species.contains('колибри') && !_hasReachedFinal) {
+    // Для финального узла добавляем специальную анимацию
+    if (node.species.contains('Человек') && !_hasReachedFinal) {
       creatureWidget = FinalCreatureIntro(
         play: !_hasReachedFinal,
         child: creatureWidget,
@@ -347,7 +433,7 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     );
   }
 
-  Widget _buildBackground(CenozoicNode node) {
+  Widget _buildBackground(MammalNode node) {
     switch (node.background) {
       case 'ForestLeavesBackground':
         return const ForestLeavesBackground(leavesCount: 20);
@@ -359,6 +445,9 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
     }
   }
 
+  // ============================
+  // Build
+  // ============================
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -407,12 +496,11 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
-            // Кнопка завершения маршрута (показываем только если пройден)
             if (isFullyUnlocked && !isCompleted)
               Container(
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.9),
+                  color: Colors.green.withOpacity(0.9),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -424,7 +512,6 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
                   tooltip: 'Завершить маршрут',
                 ),
               ),
-            // Бейдж "Пройден"
             if (isCompleted)
               Container(
                 margin: const EdgeInsets.only(right: 16),
@@ -530,7 +617,7 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
                             color: Colors.white,
                             child: Column(
                               children: [
-                                EvolutionProgressBar<CenozoicNode>(
+                                EvolutionProgressBar<MammalNode>(
                                   currentSteps: _userSteps,
                                   totalSteps: _data!.totalSteps,
                                   nodes: _data!.nodes,
@@ -597,11 +684,6 @@ class _CenozoicScreenState extends State<CenozoicScreen> {
               ),
               DarwinBottomBar(
                 currentIndex: 0,
-                onHomeTapped: (index) {},
-                onRoutesTapped: (index) {},
-                onStatsTapped: (index) {},
-                onAchievementsTapped: (index) {},
-                onProfileTapped: (index) {},
               ),
             ],
           ),

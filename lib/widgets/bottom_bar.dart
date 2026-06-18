@@ -37,108 +37,111 @@ class DarwinBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Домой -> главный экран (HomeScreen)
-          IconButton(
-            icon: Icon(
-              Icons.home_outlined,
-              size: 28,
-              color: currentIndex == 0 ? Colors.black : Colors.black54,
-            ),
-            onPressed: () {
-              if (onHomeTapped != null) {
-                onHomeTapped!(0);
-              }
+          // Домой
+          _buildNavButton(
+            context: context,
+            icon: Icons.home_outlined,
+            index: 0,
+            onTap: onHomeTapped,
+            defaultAction: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const ReadyRoutesScreen()),
+                (route) => false,
+              );
             },
           ),
           
-          // Маршруты -> экран выбора маршрутов
-          IconButton(
-            icon: Icon(
-              Icons.map_outlined,
-              size: 28,
-              color: currentIndex == 1 ? Colors.black : Colors.black54,
-            ),
-            onPressed: () {
-              if (onRoutesTapped != null) {
-                onRoutesTapped!(1);
-              } else {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (_) => const ReadyRoutesScreen(),
-                  ),
-                  (route) => false,
-                );
-              }
+          // Маршруты
+          _buildNavButton(
+            context: context,
+            icon: Icons.map_outlined,
+            index: 1,
+            onTap: onRoutesTapped,
+            defaultAction: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const ReadyRoutesScreen()),
+                (route) => false,
+              );
             },
           ),
           
-          // Статистика -> экран статистики
-          IconButton(
-            icon: Icon(
-              Icons.bar_chart_outlined,
-              size: 28,
-              color: currentIndex == 2 ? Colors.black : Colors.black54,
-            ),
-            onPressed: () async {
-              if (onStatsTapped != null) {
-                onStatsTapped!(2);
-              } else {
-                final stepsRepo = await DailyStepsRepository.getInstance();
-                if (context.mounted) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => StatisticsScreen(repository: stepsRepo),
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-          
-          // Достижения -> экран достижений
-          IconButton(
-            icon: Icon(
-              Icons.emoji_events_outlined,
-              size: 28,
-              color: currentIndex == 3 ? Colors.black : Colors.black54,
-            ),
-            onPressed: () {
-              if (onAchievementsTapped != null) {
-                onAchievementsTapped!(3);
-              } else {
+          // Статистика
+          _buildNavButton(
+            context: context,
+            icon: Icons.bar_chart_outlined,
+            index: 2,
+            onTap: onStatsTapped,
+            defaultAction: () async {
+              final stepsRepo = await DailyStepsRepository.getInstance();
+              if (context.mounted) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AchievementsScreen(),
+                    builder: (_) => StatisticsScreen(repository: stepsRepo),
                   ),
                 );
               }
             },
           ),
           
-          // Профиль -> экран профиля
-          IconButton(
-            icon: Icon(
-              Icons.person_outline,
-              size: 28,
-              color: currentIndex == 4 ? Colors.black : Colors.black54,
-            ),
-            onPressed: () {
-              if (onProfileTapped != null) {
-                onProfileTapped!(4);
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              }
+          // Достижения
+          _buildNavButton(
+            context: context,
+            icon: Icons.emoji_events_outlined,
+            index: 3,
+            onTap: onAchievementsTapped,
+            defaultAction: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AchievementsScreen(),
+                ),
+              );
+            },
+          ),
+          
+          // Профиль
+          _buildNavButton(
+            context: context,
+            icon: Icons.person_outline,
+            index: 4,
+            onTap: onProfileTapped,
+            defaultAction: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
+                ),
+              );
             },
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNavButton({
+    required BuildContext context,
+    required IconData icon,
+    required int index,
+    required ValueChanged<int>? onTap,
+    required VoidCallback defaultAction,
+  }) {
+    final isSelected = currentIndex == index;
+    
+    return IconButton(
+      icon: Icon(
+        icon,
+        size: 28,
+        color: isSelected ? Colors.black : Colors.black54,
+      ),
+      onPressed: () {
+        if (onTap != null) {
+          onTap(index);
+        } else {
+          defaultAction();
+        }
+      },
     );
   }
 }

@@ -373,17 +373,18 @@ class _BlueprintArrowsPainter extends CustomPainter {
       vertical: false,
     );
 
+   
     if (creature.heightM != null && progress > 0.3) {
-      _drawDimensionArrow(
-        canvas,
-        start: Offset(-8, size.height * 0.2),
-        end: Offset(-8, size.height * 0.8),
-        label: '${creature.heightText} высота',
-        progress: progress,
-        delay: 0.2,
-        textPainter: textPainter,
-        vertical: true,
-      );
+     _drawDimensionArrow(
+      canvas,
+      start: Offset(-8, size.height * 0.05),
+      end: Offset(-8, size.height * 0.95),
+      label: '${creature.heightText} высота',
+      progress: progress,
+      delay: 0.2,
+      textPainter: textPainter,
+      vertical: true,
+     );
     }
 
     if (creature.wingspanM != null && progress > 0.5) {
@@ -456,9 +457,8 @@ class _BlueprintArrowsPainter extends CustomPainter {
     if (progress < 0.3) return;
 
     final arrowSize = 6 * progress;
-    final angle = vertical ? -math.pi / 2 : 0;
     final dir = (direction - base);
-    final dirAngle = math.atan2(dir.dy, dir.dx) + angle;
+    final dirAngle = math.atan2(dir.dy, dir.dx);
 
     final path = Path()
       ..moveTo(base.dx, base.dy)

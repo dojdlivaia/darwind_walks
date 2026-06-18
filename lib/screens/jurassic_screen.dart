@@ -31,18 +31,30 @@ class JurassicScreen extends StatefulWidget {
 }
 
 class _JurassicScreenState extends State<JurassicScreen> {
+
+  // Данные маршрута
   JurassicData? _data;
   bool _isLoading = true;
-
   bool _hasReachedFinal = false;
   bool _showFinalConfetti = false;
 
+
+  // Прогресс пользователя
   int _userSteps = 0;
   JurassicNode? _selectedNode;
   
   RouteStateRepository? _routeRepo;
   bool _isRouteCompleted = false;
 
+
+  // Таймер для обновления UI
+
+  Timer? _updateTimer;
+  bool _isUpdating = false;
+  static const Duration _updateInterval = Duration(seconds: 8);
+
+
+  // Цвета фона
   static const List<Color> _backgroundColors = [
     Color(0xFF0A1929),
     Color(0xFF1A365D),
@@ -50,31 +62,36 @@ class _JurassicScreenState extends State<JurassicScreen> {
     Color(0xFF0A1929),
   ];
 
+  // ============================
+  // Жизненный цикл
+  // ============================
   @override
   void initState() {
     super.initState();
     _loadData();
     _loadRouteStatus();
+    _startPeriodicUpdate();
   }
 
   @override
   void dispose() {
+    _updateTimer?.cancel();
     _routeRepo?.close();
     super.dispose();
   }
 
+  // ============================
+  // Загрузка статуса маршрута
+  // ============================
   Future<void> _loadRouteStatus() async {
     _routeRepo = await RouteStateRepository.getInstance();
     final isCompleted = await _routeRepo!.isRouteCompleted('jurassic');
     final activeRoute = await _routeRepo!.getActiveRoute();
     
-    // ✅ ДОБАВИТЬ: синхронизация CurrentRouteManager
     if (activeRoute?.routeId == 'jurassic' && !isCompleted) {
       CurrentRouteManager.instance.startRoute('jurassic');
-      debugPrint('📍 JurassicScreen: синхронизирован CurrentRouteManager (активен)');
     } else if (CurrentRouteManager.instance.currentRouteId == 'jurassic') {
       CurrentRouteManager.instance.stopRoute();
-      debugPrint('📍 JurassicScreen: CurrentRouteManager остановлен');
     }
     
     if (mounted) {
@@ -88,9 +105,11 @@ class _JurassicScreenState extends State<JurassicScreen> {
     }
   }
 
+  // ============================
+  // Загрузка шагов из БД
+  // ============================
   Future<void> _loadStepsFromRepository() async {
     try {
-      // Загружаем шаги с фиксированной даты начала игры
       final startDate = DateTime(2026, 1, 1);
       final today = DateTime.now();
       
@@ -99,15 +118,12 @@ class _JurassicScreenState extends State<JurassicScreen> {
         from: startDate,
         to: today,
       );
-      //await stepsRepo.close();
       
       if (mounted) {
         setState(() {
-          // Суммируем все шаги за период
           _userSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['jurassic'] ?? 0));
+          _updateSelectedNode();
         });
-        
-        // Проверяем, не завершён ли маршрут
         _checkRouteCompletion();
       }
     } catch (e) {
@@ -115,6 +131,63 @@ class _JurassicScreenState extends State<JurassicScreen> {
     }
   }
 
+  /// Обновляет выбранный узел на основе текущих шагов
+  void _updateSelectedNode() {
+    if (_data == null || _data!.nodes.isEmpty) return;
+    final latestUnlocked = _findLastUnlockedNode(_data!.nodes, _userSteps);
+    if (_selectedNode == null || 
+        _selectedNode!.cumulativeSteps < latestUnlocked.cumulativeSteps) {
+      _selectedNode = latestUnlocked;
+    }
+  }
+
+  // ============================
+  // Периодическое обновление
+  // ============================
+  void _startPeriodicUpdate() {
+    _updateTimer?.cancel();
+    _updateTimer = Timer.periodic(_updateInterval, (timer) {
+      if (mounted && !_isUpdating) {
+        _refreshSteps();
+      }
+    });
+  }
+
+  Future<void> _refreshSteps() async {
+    if (_isUpdating) return;
+    _isUpdating = true;
+    
+    try {
+      final startDate = DateTime(2026, 1, 1);
+      final today = DateTime.now();
+      
+      final stepsRepo = await DailyStepsRepository.getInstance();
+      final stats = await stepsRepo.getRange(
+        from: startDate,
+        to: today,
+      );
+      
+      if (mounted) {
+        final newSteps = stats.fold(0, (sum, stat) => sum + (stat.stepsByRoute['jurassic'] ?? 0));
+        
+        if (newSteps != _userSteps) {
+          setState(() {
+            _userSteps = newSteps;
+            _updateSelectedNode();
+          });
+          _checkRouteCompletion();
+        }
+      }
+    } catch (e) {
+      // Подавляем ошибки обновления для стабильности
+    } finally {
+      _isUpdating = false;
+    }
+  }
+
+  // ============================
+  // Проверка завершения маршрута
+  // ============================
   Future<void> _checkRouteCompletion() async {
     if (_data == null || _isRouteCompleted) return;
     
@@ -134,6 +207,9 @@ class _JurassicScreenState extends State<JurassicScreen> {
     }
   }
 
+  // ============================
+  // Загрузка данных маршрута
+  // ============================
   Future<void> _loadData() async {
     try {
       final String jsonString = await rootBundle.loadString(
@@ -155,6 +231,9 @@ class _JurassicScreenState extends State<JurassicScreen> {
     }
   }
 
+  // ============================
+  // Логика навигации по узлам
+  // ============================
   JurassicNode _findLastUnlockedNode(List<JurassicNode> nodes, int steps) {
     JurassicNode result = nodes.first;
     for (final node in nodes) {
@@ -177,11 +256,12 @@ class _JurassicScreenState extends State<JurassicScreen> {
     });
   }
 
-  
+  // ============================
+  // Завершение маршрута
+  // ============================
   Future<void> _completeRoute() async {
     if (_data == null) return;
     
-    // Проверяем, пройден ли маршрут
     if (_userSteps < _data!.totalSteps) {
       await showDialog<bool>(
         context: context,
@@ -230,13 +310,12 @@ class _JurassicScreenState extends State<JurassicScreen> {
     );
     
     if (shouldComplete == true && mounted) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
       
       try {
         await _routeRepo?.markRouteCompleted('jurassic');
         await _routeRepo?.clearActiveRoute();
+        CurrentRouteManager.instance.stopRoute();
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -246,8 +325,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
               duration: Duration(seconds: 3),
             ),
           );
-          
-          // Возвращаемся на экран выбора маршрутов
           Navigator.of(context).pop();
         }
       } catch (e) {
@@ -259,14 +336,15 @@ class _JurassicScreenState extends State<JurassicScreen> {
               backgroundColor: Colors.red,
             ),
           );
-          setState(() {
-            _isLoading = false;
-          });
+          setState(() => _isLoading = false);
         }
       }
     }
   }
 
+  // ============================
+  // Детали существа (Blueprint)
+  // ============================
   void _showBlueprint(JurassicNode node) {
     final creature = CreatureInfo(
       species: node.species,
@@ -298,6 +376,9 @@ class _JurassicScreenState extends State<JurassicScreen> {
     );
   }
 
+  // ============================
+  // Виджеты отображения существ
+  // ============================
   Widget _buildLockedImage(Widget image) {
     return ColorFiltered(
       colorFilter: const ColorFilter.mode(Color(0xFF27301F), BlendMode.srcATop),
@@ -384,6 +465,9 @@ class _JurassicScreenState extends State<JurassicScreen> {
     );
   }
 
+  // ============================
+  // Build
+  // ============================
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -432,7 +516,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
-            // Кнопка карты/таймлайна
             Container(
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
@@ -447,7 +530,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
                 onPressed: _openTimeline,
               ),
             ),
-            // Кнопка завершения маршрута (показываем только если пройден)
             if (isFullyUnlocked && !isCompleted)
               Container(
                 margin: const EdgeInsets.only(right: 8),
@@ -464,7 +546,6 @@ class _JurassicScreenState extends State<JurassicScreen> {
                   tooltip: 'Завершить маршрут',
                 ),
               ),
-            // Бейдж "Пройден"
             if (isCompleted)
               Container(
                 margin: const EdgeInsets.only(right: 16),
@@ -637,25 +718,10 @@ class _JurassicScreenState extends State<JurassicScreen> {
               ),
               DarwinBottomBar(
                 currentIndex: 0,
-                onHomeTapped: (index) {},
-                onStatsTapped: (index) {},   // ✅ статистика
-                onRoutesTapped: (index) {},  // ✅ маршруты
-                onAchievementsTapped: (index) {}, // ✅ достижения
-                onProfileTapped: (index) {},  // ✅ профиль
               ),
             ],
           ),
         ),
-        // Для отладки — можно оставить кнопку симуляции (закомментирована)
-        // floatingActionButton: !isCompleted
-        //     ? FloatingActionButton.extended(
-        //         onPressed: _simulateSteps,
-        //         backgroundColor: const Color(0xFF4B5E09),
-        //         foregroundColor: Colors.white,
-        //         icon: const Icon(Icons.directions_walk),
-        //         label: const Text('+500 шагов'),
-        //       )
-        //     : null,
       ),
     );
   }
