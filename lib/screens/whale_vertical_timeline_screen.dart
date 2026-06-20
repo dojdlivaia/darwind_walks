@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/whale.dart';
 import '../widgets/lily_pad.dart';
+import '../widgets/mammal_media_viewer.dart'; 
 
 class WhaleVerticalTimelineScreen extends StatelessWidget {
   final WhaleData data;

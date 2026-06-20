@@ -32,6 +32,9 @@ flutter:
     - assets/data/cenozoic.json
     - assets/data/mammals.json 
     - assets/data/achievements.json 
+    - assets/data/mammals_timeline.json
+    - assets/images/mammals/
+    - assets/images/mammals/timeline_bg.jpg
     - assets/images/
     - assets/images/routes/
     - assets/images/jurassic/

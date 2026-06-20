@@ -1,0 +1,974 @@
+{
+  "period": "Мир млекопитающих",
+  "start_mya": -205,
+  "end_mya": -0.3,
+  "total_steps": 172000,
+  "description": "Эволюционный маршрут от первых млекопитающих до появления человека. 52 точки, 205 миллионов лет.",
+  "nodes": [
+    {
+      "species": "Morganucodon",
+      "time_mya": -205,
+      "cumulative_steps": 0,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/morganucodon_ct.jpg",
+          "type": "ct_scan",
+          "caption": "Трёхмерная компьютерная томограмма черепа Morganucodon oehleri. Сканирование дало 446 срезов толщиной 0,096 мм, что позволило без разрушения окаменелости детально изучить внутреннюю структуру черепа.",
+          "credit": "Rowe, T. et al., DigiMorph, University of Texas at Austin"
+        },
+        "gallery": [
+          {
+            "url": "assets/images/mammals/morganucodon_fossil.jpg",
+            "type": "fossil",
+            "caption": "Окаменевшая нижняя челюсть Morganucodon из Уэльса. Хорошо видны дифференцированные зубы.",
+            "credit": "Natural History Museum, London"
+          }
+        ]
+      },
+      "funfact": "Его зубы были устроены как у современной землеройки — он мог дробить твёрдые панцири жуков, не повреждая эмаль.",
+      "text": "Morganucodon — одно из первых животных с настоящим млекопитающим челюстным суставом. Кости нижней челюсти постепенно превращались в элементы среднего уха, что улучшало слух. Длина тела — около 10 см, вес — 20 г.",
+      "length_m": 0.1,
+      "height_m": 0.04,
+      "weight_kg": 0.02
+    },
+    {
+      "species": "Megazostrodon",
+      "time_mya": -200,
+      "cumulative_steps": 4000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/megazostrodon_fossil.jpg",
+          "type": "fossil",
+          "caption": "Окаменелость Megazostrodon из ранней юры Африки. Демонстрирует переходный этап эволюции и реконструированный шерстяной покров.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "У него были волосы и, возможно, усы — первые признаки «усиков» у млекопитающих появились именно у таких зверьков.",
+      "text": "Megazostrodon был более продвинутым, чем Morganucodon: у него уже были дифференцированные зубы и двухфазная смена зубов. Вероятно, был покрыт шерстью.",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.025
+    },
+    {
+      "species": "Sinoconodon",
+      "time_mya": -195,
+      "cumulative_steps": 8000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/sinoconodon_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Sinoconodon из ранней юры Китая. Сохранившийся рептильный признак — постоянная смена зубов на протяжении всей жизни.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "В отличие от нас, он всю жизнь менял зубы — как рептилии. Зубы сменялись до старости.",
+      "text": "Sinoconodon — примитивный Mammaliaformes, у которого сохранялся рептильный признак: постоянная смена зубов на протяжении всей жизни.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Dianoconodon",
+      "time_mya": -190,
+      "cumulative_steps": 12000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/dianoconodon_jaw.jpg",
+          "type": "fossil",
+          "caption": "Недавно описанная челюсть Dianoconodon из ранней юры Китая. Строение челюсти находится на переходном этапе эволюции среднего уха.",
+          "credit": "Chinese Academy of Sciences"
+        }
+      },
+      "funfact": "Недавно описанный вид из Китая. Его челюсть показывает переходный этап — слуховые косточки уже начинают отделяться от челюсти.",
+      "text": "Dianoconodon — недавно открытый вид из ранней юры. Его строение челюсти находится на переходном этапе эволюции среднего уха.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.035
+    },
+    {
+      "species": "Kuehneotherium",
+      "time_mya": -188,
+      "cumulative_steps": 15000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/kuehneotherium_teeth.jpg",
+          "type": "microscope",
+          "caption": "Симметричное расположение бугорков на коренных зубах Kuehneotherium — важный шаг в эволюции жевательного аппарата млекопитающих.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Один из первых симметродонтов. Его зубы показали, как млекопитающие учились эффективно пережевывать пищу, а не просто глотать.",
+      "text": "Kuehneotherium — ранний представитель Symmetrodonta. Его коренные зубы располагались симметричным треугольником.",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Shuotherium",
+      "time_mya": -168,
+      "cumulative_steps": 24000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/shuotherium_jaw.jpg",
+          "type": "fossil",
+          "caption": "Челюсть Shuotherium с уникальным «зеркальным» строением зубов, не встречающимся у современных млекопитающих.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "Уникальный зверек с «зеркальными» зубами. Доказывает, что в юре шла активная эволюция челюстей.",
+      "text": "Shuotherium — представитель группы Shuotheriida. Его зубы имели уникальное строение, что говорит о множестве эволюционных экспериментов в юрском периоде.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.04
+    },
+    {
+      "species": "Maiopatagium",
+      "time_mya": -165,
+      "cumulative_steps": 30000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/maiopatagium_fossil.jpg",
+          "type": "fossil",
+          "caption": "Исключительно сохранившийся скелет Maiopatagium с отчетливыми отпечатками кожистых перепонок между конечностями.",
+          "credit": "Nature 2017, Beijing Museum of Natural History"
+        }
+      },
+      "funfact": "Древесный харамиидан с кожистыми перепонками, который умел планировать между деревьями задолго до летяг.",
+      "text": "Maiopatagium — древнее планирующее млекопитающее из группы Haramiyida. Сохранившиеся отпечатки кожистых перепонок доказывают, что млекопитающие освоили воздух ещё в юрском периоде.",
+      "length_m": 0.15,
+      "height_m": 0.08,
+      "weight_kg": 0.05,
+      "wingspan_m": 0.2
+    },
+    {
+      "species": "Krusatodon",
+      "time_mya": -166,
+      "cumulative_steps": 31200,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/krusatodon_fossil.jpg",
+          "type": "fossil",
+          "caption": "Ископаемые останки Krusatodon из Шотландии (средняя юра). Изучение костей показало медленный рост, как у рептилий.",
+          "credit": "National Museums Scotland"
+        }
+      },
+      "funfact": "Его останки из Шотландии доказали: ранние млекопитающие росли медленно, как рептилии, а не быстро, как современные звери.",
+      "text": "Krusatodon — представитель группы Docodonta, близкой родственник Castorocauda. Изучение его костей показало, что он рос медленно.",
+      "length_m": 0.25,
+      "height_m": 0.1,
+      "weight_kg": 0.1
+    },
+    {
+      "species": "Castorocauda",
+      "time_mya": -164,
+      "cumulative_steps": 32000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/castorocauda_fossil.jpg",
+          "type": "fossil",
+          "caption": "Исключительно хорошо сохранившийся скелет Castorocauda. Видны отпечатки меха, перепончатых лап и чешуйчатого хвоста.",
+          "credit": "Zhe-Xi Luo, University of Chicago"
+        }
+      },
+      "funfact": "«Юрский бобр» — его хвост был сплюснут с боков, как у современных бобров, а на лапах были перепонки.",
+      "text": "Castorocauda — сенсационная находка из Китая. Он был полуводным, размером с барсука (до 40 см). Сохранились отпечатки меха и чешуйчатого хвоста.",
+      "length_m": 0.4,
+      "height_m": 0.15,
+      "weight_kg": 0.5
+    },
+    {
+      "species": "Agilodocodon",
+      "time_mya": -162,
+      "cumulative_steps": 32800,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/agilodocodon_fossil.jpg",
+          "type": "fossil",
+          "caption": "Ископаемое Agilodocodon scansorius. Строение конечностей указывает на древесный образ жизни.",
+          "credit": "Zhe-Xi Luo, University of Chicago"
+        }
+      },
+      "funfact": "Древесный родственник Castorocauda. Его зубы говорят о всеядности — он ел и насекомых, и растительность.",
+      "text": "Agilodocodon — ещё один докодонт из Китая. Строение его конечностей указывает на то, что он был древесным животным.",
+      "length_m": 0.2,
+      "height_m": 0.08,
+      "weight_kg": 0.06
+    },
+    {
+      "species": "Feredocodon",
+      "time_mya": -160,
+      "cumulative_steps": 33600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/feredocodon_teeth.jpg",
+          "type": "microscope",
+          "caption": "Микроскопическое исследование зубов Feredocodon. Уникальное строение коренных зубов указало на параллельную эволюцию.",
+          "credit": "Mao et al., Nature 2024"
+        }
+      },
+      "funfact": "Его уникальные зубы помогли учёным переписать эволюционное древо млекопитающих — сложные коренные развивались параллельно.",
+      "text": "Feredocodon — вид из среднеюрских слоёв Китая. Его зубы имеют уникальное строение, которое указало на параллельную эволюцию сложных коренных зубов.",
+      "length_m": 0.18,
+      "height_m": 0.07,
+      "weight_kg": 0.05
+    },
+    {
+      "species": "Vilevolodon",
+      "time_mya": -160,
+      "cumulative_steps": 34000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/vilevolodon_fossil.jpg",
+          "type": "fossil",
+          "caption": "Голотип Vilevolodon diplomylos с сохранившимися отпечатками кожистых перепонок — одно из древнейших свидетельств планирующего полёта.",
+          "credit": "Nature 2017, Beijing Museum of Natural History"
+        }
+      },
+      "funfact": "Он планировал между деревьями, как белка-летяга, на 60 миллионов лет раньше, чем считалось!",
+      "text": "Vilevolodon — древнейшее известное планирующее млекопитающее из группы Haramiyida. Кожистые перепонки между конечностями позволяли ему парить между деревьями.",
+      "length_m": 0.15,
+      "height_m": 0.07,
+      "weight_kg": 0.04,
+      "wingspan_m": 0.25
+    },
+    {
+      "species": "Juramaia",
+      "time_mya": -158,
+      "cumulative_steps": 34400,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/juramaia_ct.jpg",
+          "type": "ct_scan",
+          "caption": "Синхротронная микроКТ черепа Juramaia sinensis. Сканирование подтвердило принадлежность вида к Eutheria.",
+          "credit": "Zhe-Xi Luo, University of Chicago"
+        }
+      },
+      "funfact": "«Юрская мать» — древнейший известный предок всех плацентарных, включая нас. Она жила ещё при динозаврах.",
+      "text": "Juramaia — древнейший достоверный представитель клады Eutheria (плацентарные). Найдена в Китае. Это мелкое насекомоядное весом около 30 г.",
+      "length_m": 0.15,
+      "height_m": 0.05,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Docodon",
+      "time_mya": -155,
+      "cumulative_steps": 35600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/docodon_teeth.jpg",
+          "type": "microscope",
+          "caption": "Зубы Docodon с тремя бугорками (трибосфенические) — ключевое эволюционное новшество, позволявшее пережёвывать пищу.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "У него были зубы с тремя бугорками, которые позволяли пережёвывать пищу, а не просто кусать.",
+      "text": "Docodon — представитель Docodonta, группы, близкой к предкам всех млекопитающих. У него были сложные жевательные зубы.",
+      "length_m": 0.2,
+      "height_m": 0.08,
+      "weight_kg": 0.05
+    },
+    {
+      "species": "Sinobaatar",
+      "time_mya": -150,
+      "cumulative_steps": 38000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/sinobaatar_fossil.jpg",
+          "type": "fossil",
+          "caption": "Окаменелость Sinobaatar — раннего представителя Multituberculata. Строение зубов напоминает современных грызунов.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "Предок всех грызунов? Внешне он напоминал современную белку и имел мощные резцы.",
+      "text": "Sinobaatar — ранний представитель Multituberculata, одной из самых успешных групп млекопитающих мезозоя.",
+      "length_m": 0.2,
+      "height_m": 0.07,
+      "weight_kg": 0.06
+    },
+    {
+      "species": "Fruitafossor",
+      "time_mya": -150,
+      "cumulative_steps": 44000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/fruitafossor_skeleton.jpg",
+          "type": "fossil",
+          "caption": "Скелет Fruitafossor с мощными передними лапами для копания и специализированными зубами для питания насекомыми.",
+          "credit": "Fruita Paleontological Areas"
+        }
+      },
+      "funfact": "Древний «муравьед». Его зубы и когти идеально подходили для разорения термитников.",
+      "text": "Fruitafossor — уникальное млекопитающее поздней юры, специализировавшееся на питании общественными насекомыми. Его строение конвергентно схоже с современными муравьедами.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.04
+    },
+    {
+      "species": "Maotherium",
+      "time_mya": -130,
+      "cumulative_steps": 50000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/maotherium_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Maotherium. Строение среднего уха показывает промежуточный этап эволюции слуховых косточек млекопитающих.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "Его слуховые косточки были «зависшими» — ни полностью прикреплены к челюсти, ни полностью свободны.",
+      "text": "Maotherium — важный переходный вид из раннего мела. Строение его среднего уха показало промежуточный этап эволюции слуховых косточек.",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.025
+    },
+    {
+      "species": "Gobiconodon",
+      "time_mya": -125,
+      "cumulative_steps": 56000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/gobiconodon_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Gobiconodon из Монголии. Крупный хищник раннего мела с мощными челюстями.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "Крупный хищник размером с лису, современник Репеномама. Активно охотился на мелких позвоночных.",
+      "text": "Gobiconodon — успешный и распространенный хищник раннего мела. Отличался мощными челюстями и крупными размерами для млекопитающих того времени.",
+      "length_m": 0.5,
+      "height_m": 0.25,
+      "weight_kg": 3.5
+    },
+    {
+      "species": "Ambolestes zhoui",
+      "time_mya": -126,
+      "cumulative_steps": 59600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/ambolestes_fossil.jpg",
+          "type": "fossil",
+          "caption": "Почти полный скелет Ambolestes zhoui. Этот экземпляр продемонстрировал, что Sinodelphys — тоже эутерий, переписывая раннюю эволюцию плацентарных.",
+          "credit": "Nature 2018"
+        }
+      },
+      "funfact": "Этот скелет переписал историю: он показал, что Sinodelphys был не сумчатым, а плацентарным!",
+      "text": "Ambolestes zhoui — недавно описанный эутерий из раннего мела. Его почти полный скелет помог пересмотреть филогению ранних млекопитающих.",
+      "length_m": 0.15,
+      "height_m": 0.05,
+      "weight_kg": 0.025
+    },
+    {
+      "species": "Repenomamus giganticus",
+      "time_mya": -125,
+      "cumulative_steps": 60000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/repenomamus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Repenomamus giganticus с останками детёныша динозавра в желудке. Уникальное свидетельство хищничества млекопитающих.",
+          "credit": "Chinese Academy of Sciences"
+        }
+      },
+      "funfact": "В желудке этого млекопитающего нашли останки детёныша динозавра! Он охотился на динозавров, а не наоборот.",
+      "text": "Repenomamus giganticus — крупное млекопитающее мелового периода, размером с современную рысь (до 1 м). Это был активный хищник.",
+      "length_m": 1.0,
+      "height_m": 0.5,
+      "weight_kg": 14.0
+    },
+    {
+      "species": "Eomaia",
+      "time_mya": -125,
+      "cumulative_steps": 60000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/eomaia_fossil.jpg",
+          "type": "fossil",
+          "caption": "Ископаемое Eomaia scansoria. Один из древнейших известных эутериев с признаками плацентарных млекопитающих.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "«Заря матери» — так переводится название. У неё были настоящие плацентарные зубы и шерсть.",
+      "text": "Eomaia — ранний эутерий из Китая. У неё были все ключевые признаки плацентарных: сложные коренные зубы и шерстяной покров.",
+      "length_m": 0.1,
+      "height_m": 0.04,
+      "weight_kg": 0.02
+    },
+    {
+      "species": "Sinodelphys",
+      "time_mya": -125,
+      "cumulative_steps": 60000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/sinodelphys_fossil.jpg",
+          "type": "fossil",
+          "caption": "Долгое время считался древнейшим сумчатым. После находки Ambolestes выяснилось, что Sinodelphys — тоже плацентарное.",
+          "credit": "Zhe-Xi Luo, University of Chicago"
+        }
+      },
+      "funfact": "Древнейший известный предок всех сумчатых. Современные кенгуру и коалы — его дальние родственники.",
+      "text": "Sinodelphys — ранее считался древнейшим метатерием (сумчатые). Найден в Китае. Это был мелкий древесный зверёк.",
+      "length_m": 0.15,
+      "height_m": 0.05,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Vincelestes",
+      "time_mya": -125,
+      "cumulative_steps": 60000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/vincelestes_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Vincelestes из Аргентины. Зубы уже трёхбугорчатые, но сохраняют рептильные черты.",
+          "credit": "Museo Argentino de Ciencias Naturales"
+        }
+      },
+      "funfact": "Общий предок сумчатых и плацентарных. У него были зубы, которые открыли новую эру в эволюции млекопитающих.",
+      "text": "Vincelestes — ранний терьян (общий предок двух групп). Найден в Аргентине.",
+      "length_m": 0.3,
+      "height_m": 0.1,
+      "weight_kg": 0.1
+    },
+    {
+      "species": "Maelestes",
+      "time_mya": -90,
+      "cumulative_steps": 88000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/maelestes_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Maelestes из пустыни Гоби (Монголия). Длинный нос и строение зубов указывают на насекомоядный образ жизни.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "Он жил в пустыне Гоби и имел длинный нос — как у современной землеройки.",
+      "text": "Maelestes — ранний эутерий из Монголии. Хорошо сохранившийся череп позволяет реконструировать его как активного насекомоядного.",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Zalambdalestes",
+      "time_mya": -80,
+      "cumulative_steps": 96000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/zalambdalestes_fossil.jpg",
+          "type": "fossil",
+          "caption": "Окаменелость Zalambdalestes из Монголии. Мощные резцы и сложные коренные зубы.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "Древний предок грызунов и зайцеобразных. Его зубы были похожи на бритвы — идеально для перетирания семян.",
+      "text": "Zalambdalestes — представитель группы, близкой к предкам грызунов. У него были мощные резцы и сложные коренные зубы.",
+      "length_m": 0.2,
+      "height_m": 0.07,
+      "weight_kg": 0.05
+    },
+    {
+      "species": "Mongoloryctes",
+      "time_mya": -70,
+      "cumulative_steps": 104000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/mongoloryctes_fossil.jpg",
+          "type": "fossil",
+          "caption": "Ископаемое Mongoloryctes. Мощные передние лапы для копания — свидетельство освоения подземной экологической ниши.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "Он копал норы и был похож на современного крота. Млекопитающие уже в меловом периоде осваивали подземный мир.",
+      "text": "Mongoloryctes — древний кротоподобный зверёк с мощными передними лапами для копания.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.04
+    },
+    {
+      "species": "Purgatorius",
+      "time_mya": -65,
+      "cumulative_steps": 108000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/purgatorius_teeth.jpg",
+          "type": "fossil",
+          "caption": "Зубы Purgatorius. Строение зубов указывает на фруктоядную диету — это один из древнейших приматов.",
+          "credit": "University of California Museum of Paleontology"
+        }
+      },
+      "funfact": "Самый древний предок приматов. Он жил сразу после вымирания динозавров и был размером с мышь.",
+      "text": "Purgatorius — один из древнейших известных приматов (или их близких родственников). Он жил на деревьях и питался фруктами.",
+      "length_m": 0.15,
+      "height_m": 0.05,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Protungulatum",
+      "time_mya": -65,
+      "cumulative_steps": 108000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/protungulatum_fossil.jpg",
+          "type": "fossil",
+          "caption": "Челюсть Protungulatum — одного из древнейших копытных. Предок всех современных копытных.",
+          "credit": "University of California Museum of Paleontology"
+        }
+      },
+      "funfact": "Предок всех копытных: коров, оленей, китов и даже бегемотов. Он был размером с крысу.",
+      "text": "Protungulatum — ранний копытный, предок обширной группы копытных млекопитающих.",
+      "length_m": 0.2,
+      "height_m": 0.08,
+      "weight_kg": 0.05
+    },
+    {
+      "species": "Cimolestes",
+      "time_mya": -60,
+      "cumulative_steps": 112000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/cimolestes_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Cimolestes. Уже заметны признаки хищного образа жизни: мощные клыки и развитые хищнические зубы.",
+          "credit": "University of California Museum of Paleontology"
+        }
+      },
+      "funfact": "Предок всех современных хищных млекопитающих: кошек, собак, медведей. Он был размером с современную куницу.",
+      "text": "Cimolestes — представитель древней группы, от которой произошли хищные млекопитающие (Carnivoraformes).",
+      "length_m": 0.3,
+      "height_m": 0.15,
+      "weight_kg": 0.2
+    },
+    {
+      "species": "Plesiadapis",
+      "time_mya": -58,
+      "cumulative_steps": 113600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/plesiadapis_fossil.jpg",
+          "type": "fossil",
+          "caption": "Окаменелость Plesiadapis. Длинные пальцы и большие глазницы указывают на древесный образ жизни.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Он не был прямым предком человека, но очень наглядно показывает, как выглядели ранние приматы.",
+      "text": "Plesiadapis — древний приматоподобный зверь из Европы и Северной Америки. Он был размером с кошку, лазил по деревьям.",
+      "length_m": 0.5,
+      "height_m": 0.2,
+      "weight_kg": 1.0
+    },
+    {
+      "species": "Carpolestes",
+      "time_mya": -56,
+      "cumulative_steps": 114800,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/carpolestes_hand.jpg",
+          "type": "fossil",
+          "caption": "Ископаемая кисть Carpolestes с противопоставленным большим пальцем. Начало эволюции руки приматов.",
+          "credit": "University of California Museum of Paleontology"
+        }
+      },
+      "funfact": "У него была хватательная кисть с противопоставленным большим пальцем — как у нас!",
+      "text": "Carpolestes — один из самых ранних приматов с хватательной кистью.",
+      "length_m": 0.3,
+      "height_m": 0.12,
+      "weight_kg": 0.3
+    },
+    {
+      "species": "Archicebus achilles",
+      "time_mya": -55,
+      "cumulative_steps": 116000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/archicebus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Голотип Archicebus achilles. Древнейший достоверный представитель высших приматов (Haplorrhini).",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "Древнейший «высший» примат (Haplorrhini) — предок обезьян и людей. Назван в честь Ахиллеса.",
+      "text": "Archicebus — древнейший представитель высших приматов. Найден в Китае. Он был размером с кулак, жил на деревьях.",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.03
+    },
+    {
+      "species": "Propalaeotherium",
+      "time_mya": -48,
+      "cumulative_steps": 121600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/propalaeotherium_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Propalaeotherium. Четыре пальца на передних ногах и три на задних — ранняя стадия эволюции лошади.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Древняя лошадь размером с собаку! У неё было 4 пальца на передних ногах и 3 на задних.",
+      "text": "Propalaeotherium — один из древнейших представителей семейства лошадиных.",
+      "length_m": 0.8,
+      "height_m": 0.4,
+      "weight_kg": 10.0
+    },
+    {
+      "species": "Pakicetus",
+      "time_mya": -50,
+      "cumulative_steps": 120000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/pakicetus_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Pakicetus. Строение уха уже приспособлено для восприятия звуков под водой — первый шаг к эволюции китообразных.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Первый известный предок китов. Он жил на суше и был похож на волка.",
+      "text": "Pakicetus — древнейший известный китообразный. Он ещё был наземным животным, но уже имел признаки водной адаптации.",
+      "length_m": 1.5,
+      "height_m": 0.8,
+      "weight_kg": 30.0
+    },
+    {
+      "species": "Ambulocetus",
+      "time_mya": -48,
+      "cumulative_steps": 121600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/ambulocetus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Ambulocetus — «ходячего кита». Мощные ноги для ходьбы и длинный хвост для плавания.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "«Ходячий кит». Он мог передвигаться по суше и плавать в воде.",
+      "text": "Ambulocetus — один из самых знаменитых переходных видов. Он имел мощные ноги для ходьбы и длинный хвост для плавания.",
+      "length_m": 3.0,
+      "height_m": 1.2,
+      "weight_kg": 150.0
+    },
+    {
+      "species": "Notharctus",
+      "time_mya": -47,
+      "cumulative_steps": 122400,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/notharctus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Notharctus. Большие глаза, длинные пальцы и хвост — типичные черты ранних адапиформных приматов.",
+          "credit": "American Museum of Natural History"
+        }
+      },
+      "funfact": "Ранний примат из группы адапид — он был похож на современного лемура.",
+      "text": "Notharctus — хорошо изученный адапиформный примат эоцена. У него были большие глаза, длинные пальцы и хвост.",
+      "length_m": 0.4,
+      "height_m": 0.2,
+      "weight_kg": 1.0
+    },
+    {
+      "species": "Eosimias",
+      "time_mya": -45,
+      "cumulative_steps": 124000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/eosimias_fossil.jpg",
+          "type": "fossil",
+          "caption": "Челюсть Eosimias — одна из древнейших настоящих обезьян (антропоидов). Размером с современную мышь.",
+          "credit": "Institute of Vertebrate Paleontology, Beijing"
+        }
+      },
+      "funfact": "Одна из древнейших настоящих обезьян (антропоидов). Её вес — всего 20 г.",
+      "text": "Eosimias — древнейшая известная обезьяна. Она была очень маленькой и жила на деревьях.",
+      "length_m": 0.08,
+      "height_m": 0.04,
+      "weight_kg": 0.02
+    },
+    {
+      "species": "Basilosaurus",
+      "time_mya": -40,
+      "cumulative_steps": 128000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/basilosaurus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Basilosaurus — гигантского древнего кита. Рудиментарные задние конечности указывают на происхождение от наземных предков.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Огромный морской зверь длиной до 18 метров. Назвали его «ящером» (saurus), но это был кит!",
+      "text": "Basilosaurus — древний кит, полностью перешедший к водному образу жизни. У него были рудиментарные задние конечности.",
+      "length_m": 18.0,
+      "height_m": null,
+      "weight_kg": 8000.0,
+      "wingspan_m": null
+    },
+    {
+      "species": "Aegyptopithecus",
+      "time_mya": -30,
+      "cumulative_steps": 136000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/aegyptopithecus_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Aegyptopithecus zeuxis. Ключевой вид в эволюции обезьян Старого Света.",
+          "credit": "Egyptian Geological Museum"
+        }
+      },
+      "funfact": "Ранняя обезьяна Старого Света — предок всех мартышковых, гиббонов, орангутанов, горилл, шимпанзе и людей.",
+      "text": "Aegyptopithecus — один из ключевых видов в эволюции обезьян. Он уже не имел хвоста и вёл древесный образ жизни.",
+      "length_m": 0.5,
+      "height_m": 0.4,
+      "weight_kg": 4.0
+    },
+    {
+      "species": "Parapithecus",
+      "time_mya": -28,
+      "cumulative_steps": 137600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/parapithecus_skull.jpg",
+          "type": "fossil",
+          "caption": "Челюсть Parapithecus из Египта. Мелкая обезьяна, напоминающая современную игрунку.",
+          "credit": "Egyptian Geological Museum"
+        }
+      },
+      "funfact": "Мелкая обезьяна из Египта, которая напоминала современную игрунку.",
+      "text": "Parapithecus — ранняя катарриновая обезьяна (обезьяны Старого Света). Она была маленькой, размером с кошку.",
+      "length_m": 0.3,
+      "height_m": 0.15,
+      "weight_kg": 0.5
+    },
+    {
+      "species": "Proconsul",
+      "time_mya": -22,
+      "cumulative_steps": 142400,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/proconsul_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Proconsul. Один из древнейших гоминоидов — уже без хвоста, с чертами человекообразных обезьян.",
+          "credit": "National Museums of Kenya"
+        }
+      },
+      "funfact": "Ранний гоминоид — у него уже не было хвоста, и он был похож на обезьяну, но без хвоста.",
+      "text": "Proconsul — один из древнейших известных гоминоидов (человекообразных обезьян). Найден в Африке.",
+      "length_m": 1.0,
+      "height_m": 0.8,
+      "weight_kg": 15.0
+    },
+    {
+      "species": "Morotopithecus bishopi",
+      "time_mya": -20,
+      "cumulative_steps": 144000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/morotopithecus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Позвонки Morotopithecus. Уже похожи на человеческие — он мог поднимать руки над головой.",
+          "credit": "Uganda Museum"
+        }
+      },
+      "funfact": "Его позвонки были уже похожи на человеческие — он мог поднимать руки над головой, как современные люди.",
+      "text": "Morotopithecus — один из ранних гоминоидов с чертами скелета, характерными для современных человекообразных обезьян.",
+      "length_m": 1.2,
+      "height_m": 0.9,
+      "weight_kg": 20.0
+    },
+    {
+      "species": "Pierolapithecus",
+      "time_mya": -13,
+      "cumulative_steps": 149600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/pierolapithecus_fossil.jpg",
+          "type": "fossil",
+          "caption": "Скелет Pierolapithecus из Испании. Один из древнейших достоверных гоминид.",
+          "credit": "Institut Català de Paleontologia"
+        }
+      },
+      "funfact": "Древнейший предок людей и человекообразных обезьян. Найден в Испании — значит, наши предки могли жить в Европе!",
+      "text": "Pierolapithecus — вид, который считается одним из древнейших достоверных гоминид (предков людей и человекообразных обезьян).",
+      "length_m": 0.8,
+      "height_m": 0.6,
+      "weight_kg": 10.0
+    },
+    {
+      "species": "Sahelanthropus tchadensis",
+      "time_mya": -7,
+      "cumulative_steps": 154400,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/sahelanthropus_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп TM 266 (голотип) Sahelanthropus tchadensis, найденный в пустыне Джураб в Чаде в 2001 году.",
+          "credit": "Michel Brunet, Université de Poitiers"
+        }
+      },
+      "funfact": "Древнейший возможный предок человека. Его череп найден в Чаде — это перевернуло все представления о родине человечества.",
+      "text": "Sahelanthropus — возможно, самый древний известный гоминид. Он жил в Центральной Африке и, вероятно, уже передвигался на двух ногах.",
+      "length_m": 1.2,
+      "height_m": 1.0,
+      "weight_kg": 35.0
+    },
+    {
+      "species": "Orrorin tugenensis",
+      "time_mya": -6,
+      "cumulative_steps": 155200,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/orrorin_fossil.jpg",
+          "type": "fossil",
+          "caption": "Фрагменты скелета Orrorin tugenensis. Бедренная кость указывает на двуногую походку.",
+          "credit": "National Museums of Kenya"
+        }
+      },
+      "funfact": "«Миллениумский человек». Он ходил на двух ногах и лазил по деревьям — идеальный переходный вид.",
+      "text": "Orrorin — один из древнейших достоверных двуногих гоминидов. Найден в Кении.",
+      "length_m": 1.2,
+      "height_m": 1.0,
+      "weight_kg": 35.0
+    },
+    {
+      "species": "Ardipithecus ramidus",
+      "time_mya": -4.4,
+      "cumulative_steps": 156480,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/ardipithecus_skeleton.jpg",
+          "type": "fossil",
+          "caption": "Скелет «Арди» (Ardipithecus ramidus) — самый полный скелет раннего гоминида.",
+          "credit": "Tim White, University of California"
+        }
+      },
+      "funfact": "«Арди» — самый полный скелет раннего гоминида. Она могла ходить, но её пальцы ног были ещё хватательными.",
+      "text": "Ardipithecus — вид, который сочетал в себе черты древесных и наземных обитателей. Около 4.4 млн лет назад она жила в лесах Восточной Африки.",
+      "length_m": 1.2,
+      "height_m": 1.0,
+      "weight_kg": 50.0
+    },
+    {
+      "species": "Australopithecus afarensis",
+      "time_mya": -3.2,
+      "cumulative_steps": 157440,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/lucy_skeleton.jpg",
+          "type": "fossil",
+          "caption": "Скелет «Люси» (Australopithecus afarensis) — самый знаменитый скелет в истории палеоантропологии.",
+          "credit": "Donald Johanson, Cleveland Museum of Natural History"
+        }
+      },
+      "funfact": "«Люси» — самый знаменитый скелет в истории палеоантропологии. Она ходила прямо, но умела лазать по деревьям.",
+      "text": "Australopithecus afarensis — один из самых известных видов гоминидов. Размер мозга был около 380–430 см³.",
+      "length_m": 1.2,
+      "height_m": 1.1,
+      "weight_kg": 30.0
+    },
+    {
+      "species": "Australopithecus africanus",
+      "time_mya": -2.8,
+      "cumulative_steps": 157760,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/taung_child.jpg",
+          "type": "fossil",
+          "caption": "«Таунгский ребёнок» — череп Australopithecus africanus, найденный в Южной Африке в 1924 году.",
+          "credit": "Raymond Dart, University of the Witwatersrand"
+        }
+      },
+      "funfact": "«Дитя из Таунга» — первый австралопитек, найденный в Африке. Его череп показал, что мы произошли именно здесь.",
+      "text": "Australopithecus africanus — более поздний вид, с несколько большим мозгом (около 450 см³) и более прогрессивными чертами.",
+      "length_m": 1.3,
+      "height_m": 1.15,
+      "weight_kg": 35.0
+    },
+    {
+      "species": "Homo habilis",
+      "time_mya": -2.3,
+      "cumulative_steps": 158160,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/homo_habilis_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Homo habilis (KNM-ER 1813) — первого достоверного представителя рода Homo.",
+          "credit": "National Museums of Kenya"
+        }
+      },
+      "funfact": "«Человек умелый» — первый достоверный представитель нашего рода. Он впервые начал изготавливать каменные орудия.",
+      "text": "Homo habilis — вид, который связывают с олдувайской культурой каменных орудий. Мозг — около 600 см³.",
+      "length_m": 1.3,
+      "height_m": 1.2,
+      "weight_kg": 35.0
+    },
+    {
+      "species": "Homo erectus",
+      "time_mya": -1.8,
+      "cumulative_steps": 158560,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/homo_erectus_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Homo erectus из Явы. Первый вид человека, вышедший за пределы Африки.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Первый человек, который вышел из Африки. Он дошёл до Китая, Индонезии и Европы.",
+      "text": "Homo erectus — самый долгоживущий вид человека (существовал около 2 млн лет). Он первым начал использовать огонь и изготовил ашельские рубила.",
+      "length_m": 1.6,
+      "height_m": 1.5,
+      "weight_kg": 60.0
+    },
+    {
+      "species": "Homo heidelbergensis",
+      "time_mya": -0.6,
+      "cumulative_steps": 159600,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/homo_heidelbergensis_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Homo heidelbergensis из Испании. Общий предок неандертальцев и современных людей.",
+          "credit": "Museo Arqueológico Nacional de España"
+        }
+      },
+      "funfact": "Предок неандертальцев и, вероятно, нас. Он был первым, кто начал строить убежища.",
+      "text": "Homo heidelbergensis — вид, который считается общим предком неандертальцев и современных людей.",
+      "length_m": 1.7,
+      "height_m": 1.6,
+      "weight_kg": 70.0
+    },
+    {
+      "species": "Homo neanderthalensis",
+      "time_mya": -0.4,
+      "cumulative_steps": 160800,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/homo_neanderthalensis_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп неандертальца из Крапины (Хорватия). Объём мозга — около 1500 см³.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Неандертальцы были искусными охотниками, хоронили своих мёртвых и даже украшали себя перьями.",
+      "text": "Homo neanderthalensis — близкий родственник человека. Мозг был больше, чем у современного человека (около 1500 см³).",
+      "length_m": 1.6,
+      "height_m": 1.6,
+      "weight_kg": 75.0
+    },
+    {
+      "species": "Homo sapiens",
+      "time_mya": -0.3,
+      "cumulative_steps": 172000,
+      "media": {
+        "primary": {
+          "url": "assets/images/mammals/homo_sapiens_skull.jpg",
+          "type": "fossil",
+          "caption": "Череп Homo sapiens из пещеры Кафзех (Израиль) — один из древнейших известных анатомически современных людей.",
+          "credit": "Natural History Museum, London"
+        }
+      },
+      "funfact": "Мы — единственный выживший вид людей. Но наши гены хранят следы скрещиваний с неандертальцами и денисовцами.",
+      "text": "Homo sapiens — анатомически современный человек. Появился около 300 000 лет назад в Африке. Обладает развитым языком, абстрактным мышлением и сложной культурой.",
+      "length_m": 1.7,
+      "height_m": 1.7,
+      "weight_kg": 70.0
+    }
+  ]
+}

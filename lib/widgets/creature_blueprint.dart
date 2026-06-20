@@ -429,9 +429,6 @@ class _BlueprintArrowsPainter extends CustomPainter {
 
     if (animProgress > 0.7) {
       final mid = Offset.lerp(start, end, 0.5)!;
-      final textOffset = vertical
-          ? Offset(mid.dx - 45, mid.dy)
-          : Offset(mid.dx, mid.dy - 18);
 
       textPainter.text = TextSpan(
         text: label,
@@ -442,7 +439,25 @@ class _BlueprintArrowsPainter extends CustomPainter {
         ),
       );
       textPainter.layout();
-      textPainter.paint(canvas, textOffset);
+
+      if (vertical) {
+        // Поворачиваем текст на 90° для вертикальной стрелки
+        canvas.save();
+        canvas.translate(mid.dx, mid.dy);
+        canvas.rotate(-math.pi / 2);
+        textPainter.paint(
+          canvas,
+          Offset(-textPainter.width / 2, -textPainter.height - 4),
+        );
+        canvas.restore();
+      } else {
+        // Центрируем текст по горизонтали и размещаем над стрелкой
+        final textOffset = Offset(
+          mid.dx - textPainter.width / 2,
+          mid.dy - textPainter.height - 4,
+        );
+        textPainter.paint(canvas, textOffset);
+      }
     }
   }
 

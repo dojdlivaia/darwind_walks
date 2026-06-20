@@ -58,6 +58,45 @@
       "wingspan_m": null
     },
     {
+      "species": "Kuehneotherium",
+      "time_mya": -188,
+      "cumulative_steps": 15000,
+      "funfact": "Один из первых симметродонтов. Его зубы показали, как млекопитающие учились эффективно пережевывать пищу, а не просто глотать.",
+      "text": "Kuehneotherium — ранний представитель Symmetrodonta. Его коренные зубы располагались симметричным треугольником, что стало важным шагом в эволюции жевательного аппарата. Геологический возраст: ранняя юра (~188 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Kuehneotherium.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.03,
+      "wingspan_m": null
+    },
+    {
+      "species": "Shuotherium",
+      "time_mya": -168,
+      "cumulative_steps": 24000,
+      "funfact": "Уникальный зверек с «зеркальными» зубами. Доказывает, что в юре шла активная эволюция челюстей.",
+      "text": "Shuotherium — представитель группы Shuotheriida. Его зубы имели уникальное строение, не встречающееся у современных млекопитающих, что говорит о множестве эволюционных экспериментов в юрском периоде. Геологический возраст: средняя юра (~168 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Shuotherium.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.04,
+      "wingspan_m": null
+    },
+    {
+      "species": "Maiopatagium",
+      "time_mya": -165,
+      "cumulative_steps": 30000,
+      "funfact": "Древесный харамиидан с кожистыми перепонками, который умел планировать между деревьями задолго до летяг.",
+      "text": "Maiopatagium — древнее планирующее млекопитающее из группы Haramiyida. Сохранившиеся отпечатки кожистых перепонок доказывают, что млекопитающие освоили воздух ещё в юрском периоде. Геологический возраст: поздняя юра (~165 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Maiopatagium.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.15,
+      "height_m": 0.08,
+      "weight_kg": 0.05,
+      "wingspan_m": 0.2
+    },
+    {
       "species": "Krusatodon",
       "time_mya": -166,
       "cumulative_steps": 31200,
@@ -110,6 +149,19 @@
       "wingspan_m": null
     },
     {
+      "species": "Vilevolodon",
+      "time_mya": -160,
+      "cumulative_steps": 34000,
+      "funfact": "Он планировал между деревьями, как белка-летяга, на 60 миллионов лет раньше, чем считалось!",
+      "text": "Vilevolodon — древнейшее известное планирующее млекопитающее из группы Haramiyida. Кожистые перепонки между конечностями позволяли ему парить между деревьями. Геологический возраст: поздняя юра (~160 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Vilevolodon.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.15,
+      "height_m": 0.07,
+      "weight_kg": 0.04,
+      "wingspan_m": 0.25
+    },
+    {
       "species": "Juramaia",
       "time_mya": -158,
       "cumulative_steps": 34400,
@@ -149,6 +201,58 @@
       "wingspan_m": null
     },
     {
+      "species": "Fruitafossor",
+      "time_mya": -150,
+      "cumulative_steps": 44000,
+      "funfact": "Древний «муравьед». Его зубы и когти идеально подходили для разорения термитников.",
+      "text": "Fruitafossor — уникальное млекопитающее поздней юры, специализировавшееся на питании общественными насекомыми. Его строение конвергентно схоже с современными муравьедами. Геологический возраст: поздняя юра (~150 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Fruitafossor.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.15,
+      "height_m": 0.06,
+      "weight_kg": 0.04,
+      "wingspan_m": null
+    },
+    {
+      "species": "Maotherium",
+      "time_mya": -130,
+      "cumulative_steps": 50000,
+      "funfact": "Его слуховые косточки были «зависшими» — ни полностью прикреплены к челюсти, ни полностью свободны.",
+      "text": "Maotherium — важный переходный вид из раннего мела. Строение его среднего уха показало промежуточный этап эволюции слуховых косточек млекопитающих. Геологический возраст: ранний мел (~130 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Maotherium.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.12,
+      "height_m": 0.05,
+      "weight_kg": 0.025,
+      "wingspan_m": null
+    },
+    {
+      "species": "Gobiconodon",
+      "time_mya": -125,
+      "cumulative_steps": 56000,
+      "funfact": "Крупный хищник размером с лису, современник Репеномама. Активно охотился на мелких позвоночных.",
+      "text": "Gobiconodon — успешный и распространенный хищник раннего мела. Отличался мощными челюстями и крупными размерами для млекопитающих того времени. Геологический возраст: ранний мел (~125 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Gobiconodon.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.5,
+      "height_m": 0.25,
+      "weight_kg": 3.5,
+      "wingspan_m": null
+    },
+    {
+      "species": "Ambolestes zhoui",
+      "time_mya": -126,
+      "cumulative_steps": 59600,
+      "funfact": "Этот скелет переписал историю: он показал, что Sinodelphys был не сумчатым, а плацентарным!",
+      "text": "Ambolestes zhoui — недавно описанный эутерий из раннего мела. Его почти полный скелет помог пересмотреть филогению ранних млекопитающих. Геологический возраст: ранний мел (~126 млн лет назад). Уровень уверенности: высокий.",
+      "image_url": "assets/images/mammals/Ambolestes.png",
+      "background": "ForestLeavesBackground",
+      "length_m": 0.15,
+      "height_m": 0.05,
+      "weight_kg": 0.025,
+      "wingspan_m": null
+    },
+    {
       "species": "Repenomamus giganticus",
       "time_mya": -125,
       "cumulative_steps": 60000,
@@ -179,7 +283,7 @@
       "time_mya": -125,
       "cumulative_steps": 60000,
       "funfact": "Древнейший известный предок всех сумчатых. Современные кенгуру и коалы — его дальние родственники.",
-      "text": "Sinodelphys — древнейший достоверный метатерий (сумчатые). Найден в Китае. Это был мелкий древесный зверёк, который лазил по деревьям. Геологический возраст: ранний мел (~125 млн лет назад). Уровень уверенности: высокий.",
+      "text": "Sinodelphys — ранее считался древнейшим метатерием (сумчатые). Найден в Китае. Это был мелкий древесный зверёк, который лазил по деревьям. Геологический возраст: ранний мел (~125 млн лет назад). Уровень уверенности: пересмотрен.",
       "image_url": "assets/images/mammals/Sinodelphys.png",
       "background": "ForestLeavesBackground",
       "length_m": 0.15,
