@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 class BouncingCreature extends StatefulWidget {
   final Widget child;
@@ -12,10 +11,10 @@ class BouncingCreature extends StatefulWidget {
   const BouncingCreature({
     super.key,
     required this.child,
-    this.amplitude = 8,
+    this.amplitude = 12.0,
     this.duration = const Duration(seconds: 3),
     this.showShadow = true,
-    this.shadowOffset = 30,
+    this.shadowOffset = 24.0,
   });
 
   @override
@@ -45,87 +44,106 @@ class _BouncingCreatureState extends State<BouncingCreature>
       animation: _controller,
       builder: (context, child) {
         final t = _controller.value * 2 * math.pi;
-        final dy = math.sin(t) * widget.amplitude;
-        final normalizedHeight = dy / widget.amplitude;
+        // dy: отрицательное значение = вверх (стандартная система координат для прыжка)
+        // Но в Flutter Y растёт вниз, поэтому для прыжка ВВЕРХ нужно вычитать.
+        // sin(t) даёт -1..1. Умножаем на -amplitude чтобы -1 было внизу, +1 вверху? 
+        // Нет, проще: пусть dy = -sin(t) * amplitude. Тогда при t=pi/2 dy=-amp (вверх).
+        final dy = -math.sin(t) * widget.amplitude; 
+        
+        // normalizedHeight: 0.0 (на полу) -> 1.0 (в пике прыжка)
+        // Когда sin(t)=1 (пик), dy = -amplitude. normalizedHeight должен быть 1.
+        // Когда sin(t)=-1 (низ), dy = +amplitude... Стоп.
+        // Давайте упростим: sin(t) колеблется -1..1.
+        // Пусть "пол" это sin(t) = -1. "Пик" это sin(t) = 1.
+        final rawSin = math.sin(t);
+        final normalizedHeight = (rawSin + 1) / 2; // 0 (низ) -> 1 (верх)
 
-        // Параметры эллиптической тени
-        final shadowScaleX = 1.0 + (1 - normalizedHeight) * 0.5;
-        final shadowScaleY = 0.12;
-        final shadowOpacity = 0.4 - (normalizedHeight + 1) * 0.2;
-        final shadowBlur = 15 + (1 - normalizedHeight) * 25;
+        // ✅ ПАРАМЕТРЫ ТЕНИ (зависят от высоты, но позиция НЕ зависит)
+        // Низко (0): большая, тёмная, чёткая
+        // Высоко (1): маленькая, прозрачная, размытая
+        final shadowScale = 1.0 - (normalizedHeight * 0.4);   // 1.0 -> 0.6
+        final shadowOpacity = 0.5 - (normalizedHeight * 0.35); // 0.5 -> 0.15
+        final shadowBlur = 8.0 + (normalizedHeight * 24.0);    // 8 -> 32
 
-        // 🔹 УМЕНЬШЕНЫ отступы чтобы не обрезали картинку
-        final extraPadding = widget.shadowOffset + 20;
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final maxWidth = constraints.hasBoundedWidth
+                ? constraints.maxWidth
+                : MediaQuery.of(context).size.width;
 
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 30,   // было 60
-            vertical: extraPadding,
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            clipBehavior: Clip.none,
-            children: [
-              // Эллиптическая тень
-              if (widget.showShadow)
-                Positioned(
-                  bottom: -widget.shadowOffset + dy,
-                  child: Transform.scale(
-                    scaleX: shadowScaleX,
-                    scaleY: shadowScaleY,
-                    child: CustomPaint(
-                      size: const Size(80, 20),
-                      painter: _ShadowPainter(
-                        opacity: shadowOpacity.clamp(0.0, 0.4),
-                        blurRadius: shadowBlur,
+            final creatureWidth = maxWidth * 0.9;
+            final creatureHeight = creatureWidth * 0.85;
+
+            // ✅ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ:
+            // Весь контейнер прижат к низу родителя через Align.
+            // Внутри Stack: тень НЕПОДВИЖНА на дне, картинка прыгает ОТ дна.
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                width: creatureWidth,
+                // Высота = размер зверя + запас на прыжок + зона тени
+                height: creatureHeight + widget.amplitude * 2 + widget.shadowOffset,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // 1. ТЕНЬ — НЕПОДВИЖНА, всегда на дне Stack
+                    // Рисуется ПЕРВОЙ = ЗА картинкой
+                    if (widget.showShadow)
+                      Positioned(
+                        bottom: 0, // ✅ Всегда на самом дне!
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Transform.scale(
+                            scaleX: shadowScale,
+                            scaleY: 0.12, // Плоский эллипс
+                            child: Container(
+                              width: creatureWidth,
+                              height: creatureWidth * 0.3,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.transparent,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                      shadowOpacity.clamp(0.0, 1.0),
+                                    ),
+                                    blurRadius: shadowBlur,
+                                    spreadRadius: -shadowBlur * 0.2,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    // 2. КАРТИНКА — прыгает ОТ дна Stack
+                    // Рисуется ВТОРОЙ = ПЕРЕД тенью
+                    // bottom = shadowOffset + смещение прыжка
+                    // Когда normalizedHeight=0 (низ): bottom = shadowOffset (стоит над тенью)
+                    // Когда normalizedHeight=1 (верх): bottom = shadowOffset + amplitude*2
+                    Positioned(
+                      bottom: widget.shadowOffset + (normalizedHeight * widget.amplitude * 2),
+                      left: 0,
+                      right: 0,
+                      child: SizedBox(
+                        width: creatureWidth,
+                        height: creatureHeight,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: child!,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-
-              // Персонаж
-              Transform.translate(
-                offset: Offset(0, dy),
-                child: child,
               ),
-            ],
-          ),
+            );
+          },
         );
       },
       child: widget.child,
     );
   }
-}
-
-class _ShadowPainter extends CustomPainter {
-  final double opacity;
-  final double blurRadius;
-
-  _ShadowPainter({required this.opacity, required this.blurRadius});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..shader = RadialGradient(
-        center: Alignment.center,
-        radius: 1.0,
-        colors: [
-          Colors.black.withOpacity(opacity),
-          Colors.black.withOpacity(opacity * 0.4),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ).createShader(Rect.fromCircle(
-        center: Offset(size.width / 2, size.height / 2),
-        radius: size.width / 2,
-      ));
-    canvas.drawOval(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _ShadowPainter old) =>
-      old.opacity != opacity || old.blurRadius != blurRadius;
 }
