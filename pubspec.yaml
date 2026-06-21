@@ -34,7 +34,6 @@ flutter:
     - assets/data/achievements.json 
     - assets/data/mammals_timeline.json
     - assets/images/mammals/
-    - assets/images/mammals/timeline_bg.jpg
     - assets/images/
     - assets/images/routes/
     - assets/images/jurassic/

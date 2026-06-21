@@ -534,7 +534,7 @@ class _JurassicScreenState extends State<JurassicScreen> {
               Container(
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.9),
+                  color: Colors.green.withValues(alpha:0.9),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(

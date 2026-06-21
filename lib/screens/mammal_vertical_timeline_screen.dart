@@ -52,10 +52,10 @@ class _MammalVerticalTimelineScreenState
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: _accentColor.withOpacity(0.2),
+              color: _accentColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _accentColor.withOpacity(0.3),
+                color: _accentColor.withValues(alpha: 0.3),
               ),
             ),
             child: Text(
@@ -159,7 +159,7 @@ class _MammalVerticalTimelineScreenState
                 child: Image.asset(
                   'assets/images/mammals/timeline_bg.jpg',
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
@@ -175,7 +175,7 @@ class _MammalVerticalTimelineScreenState
                 ),
               ),
               Positioned.fill(
-                child: Container(color: _background.withOpacity(0.85)),
+                child: Container(color: _background.withValues(alpha: 0.85)),
               ),
 
               SingleChildScrollView(
@@ -194,7 +194,7 @@ class _MammalVerticalTimelineScreenState
                           child: CustomPaint(
                             painter: _MammalTimelineLinePainter(
                               points: points,
-                              lineColor: _textColor.withOpacity(0.3),
+                              lineColor: _textColor.withValues(alpha:0.3),
                             ),
                           ),
                         ),
@@ -260,7 +260,7 @@ class _MammalVerticalTimelineScreenState
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: isUnlocked ? _textColor : _textColor.withOpacity(0.5),
+        color: isUnlocked ? _textColor : _textColor.withValues(alpha:0.5),
       ),
     );
 
@@ -274,7 +274,7 @@ class _MammalVerticalTimelineScreenState
             style: TextStyle(
               fontSize: 9,
               height: 1.25,
-              color: _textColor.withOpacity(0.7),
+              color: _textColor.withValues(alpha:0.7),
             ),
           )
         : const SizedBox.shrink();
@@ -480,7 +480,7 @@ class _MammalAnimatedNodeState extends State<_MammalAnimatedNode>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: widget.textColor.withOpacity(
+                          color: widget.textColor.withValues(alpha:
                             _tapCtrl.isAnimating
                                 ? _rippleOpacityAnim.value
                                 : 0.0,

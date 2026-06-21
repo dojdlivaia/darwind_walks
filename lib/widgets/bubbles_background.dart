@@ -130,7 +130,7 @@ class _BubblesPainter extends CustomPainter {
 
       final center = Offset(dx, dy);
 
-      strokePaint.color = Colors.white.withOpacity(bubble.opacity);
+      strokePaint.color = Colors.white.withValues(alpha:bubble.opacity);
 
       canvas.drawCircle(center, bubble.radius, strokePaint);
 

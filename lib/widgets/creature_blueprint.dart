@@ -3,7 +3,6 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import '../models/creature_info.dart';
 
@@ -101,7 +100,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
               end: Alignment.bottomCenter,
               colors: [
                 _bgDark,
-                _bgMedium.withOpacity(0.9),
+                _bgMedium.withValues(alpha:0.9),
                 _bgDark,
               ],
             ),
@@ -123,7 +122,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
-                            color: _textBright.withOpacity(_safeOpacity(_filmLoadAnim.value)),
+                            color: _textBright.withValues(alpha:_safeOpacity(_filmLoadAnim.value)),
                             letterSpacing: 2,
                             fontFamily: 'Monospace',
                           ),
@@ -145,7 +144,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                                 widget.creature.imageUrl,
                                 key: _imageKey,
                                 fit: BoxFit.contain,
-                                color: _textBright.withOpacity(
+                                color: _textBright.withValues(alpha:
                                   _safeOpacity(0.3 + 0.4 * _filmLoadAnim.value),
                                 ),
                                 colorBlendMode: BlendMode.srcIn,
@@ -186,7 +185,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                           ),
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: _accent.withOpacity(0.6),
+                              color: _accent.withValues(alpha:0.6),
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(8),
@@ -225,11 +224,11 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: _textBright.withOpacity(0.7)),
+                        border: Border.all(color: _textBright.withValues(alpha:0.7)),
                       ),
                       child: Icon(
                         Icons.close,
-                        color: _textBright.withOpacity(0.9),
+                        color: _textBright.withValues(alpha:0.9),
                         size: 20,
                       ),
                     ),
@@ -261,7 +260,7 @@ class _CreatureBlueprintState extends State<CreatureBlueprint>
           label.toUpperCase(),
           style: TextStyle(
             fontSize: 9,
-            color: _textBright.withOpacity(0.7),
+            color: _textBright.withValues(alpha:0.7),
             letterSpacing: 1,
           ),
         ),
@@ -310,8 +309,8 @@ class _GlowOutlinePainter extends CustomPainter {
         center: Alignment.center,
         radius: 1.0,
         colors: [
-          glowColor.withOpacity((0.6 * glowIntensity).clamp(0.0, 1.0)),
-          glowColor.withOpacity((0.2 * glowIntensity).clamp(0.0, 1.0)),
+          glowColor.withValues(alpha:(0.6 * glowIntensity).clamp(0.0, 1.0)),
+          glowColor.withValues(alpha:(0.2 * glowIntensity).clamp(0.0, 1.0)),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -320,7 +319,7 @@ class _GlowOutlinePainter extends CustomPainter {
     canvas.drawCircle(center, radius * (1 + 0.15 * glowIntensity), glowPaint);
 
     final outlinePaint = Paint()
-      ..color = glowColor.withOpacity(0.9)
+      ..color = glowColor.withValues(alpha:0.9)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0 + glowIntensity
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
@@ -415,7 +414,7 @@ class _BlueprintArrowsPainter extends CustomPainter {
     if (animProgress <= 0) return;
 
     final paint = Paint()
-      ..color = arrowColor.withOpacity((0.9 * animProgress).clamp(0.0, 1.0))
+      ..color = arrowColor.withValues(alpha:(0.9 * animProgress).clamp(0.0, 1.0))
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -433,7 +432,7 @@ class _BlueprintArrowsPainter extends CustomPainter {
       textPainter.text = TextSpan(
         text: label,
         style: TextStyle(
-          color: textColor.withOpacity(animProgress.clamp(0.0, 1.0)),
+          color: textColor.withValues(alpha:animProgress.clamp(0.0, 1.0)),
           fontSize: 10,
           fontFamily: 'Monospace',
         ),
@@ -519,8 +518,8 @@ class _FilmGrainPainter extends CustomPainter {
         radius: 1.2,
         colors: [
           Colors.transparent,
-          Colors.black.withOpacity((0.4 * progress).clamp(0.0, 1.0)),
-          Colors.black.withOpacity((0.7 * progress).clamp(0.0, 1.0)),
+          Colors.black.withValues(alpha:(0.4 * progress).clamp(0.0, 1.0)),
+          Colors.black.withValues(alpha:(0.7 * progress).clamp(0.0, 1.0)),
         ],
         stops: const [0.4, 0.8, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
@@ -534,14 +533,14 @@ class _FilmGrainPainter extends CustomPainter {
         final y = random.nextDouble() * size.height;
         final alpha = (random.nextDouble() * 0.15 * progress).clamp(0.0, 1.0);
         
-        grainPaint.color = Colors.white.withOpacity(alpha);
+        grainPaint.color = Colors.white.withValues(alpha:alpha);
         canvas.drawCircle(Offset(x, y), 0.8, grainPaint);
       }
     }
 
     if (progress < 1.0) {
       final scanlinePaint = Paint()
-        ..color = Colors.black.withOpacity((0.1 * (1 - progress)).clamp(0.0, 1.0))
+        ..color = Colors.black.withValues(alpha:(0.1 * (1 - progress)).clamp(0.0, 1.0))
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2;
 

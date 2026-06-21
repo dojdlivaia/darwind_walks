@@ -39,7 +39,7 @@ class MammalTimelinePoint extends StatelessWidget {
               boxShadow: isCurrent
                   ? [
                       BoxShadow(
-                        color: _getColor(isUnlocked, isCurrent).withOpacity(0.5),
+                        color: _getColor(isUnlocked, isCurrent).withValues(alpha:0.5),
                         blurRadius: 20,
                         spreadRadius: 4,
                       ),
@@ -48,7 +48,7 @@ class MammalTimelinePoint extends StatelessWidget {
             ),
             child: Icon(
               Icons.pets,
-              color: Colors.white.withOpacity(isFuture ? 0.3 : 1.0),
+              color: Colors.white.withValues(alpha:isFuture ? 0.3 : 1.0),
               size: isCurrent ? 28 : 22,
             ),
           ),
@@ -91,7 +91,7 @@ class MammalTimelinePoint extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF4B5E09).withOpacity(0.6),
+                color: const Color(0xFF4B5E09).withValues(alpha:0.6),
                 width: 2,
               ),
             ),

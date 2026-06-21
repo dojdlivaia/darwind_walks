@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/achievement.dart';
+import 'package:flutter/foundation.dart';  
 
 class AchievementRepository {
   static AchievementRepository? _instance;
@@ -38,7 +39,7 @@ class AchievementRepository {
       
       return _allAchievements!;
     } catch (e) {
-      print('Error loading achievements: $e');
+      debugPrint('Error loading achievements: $e');
       return [];
     }
   }

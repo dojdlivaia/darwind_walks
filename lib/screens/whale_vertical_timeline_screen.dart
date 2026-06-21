@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../models/whale.dart';
 import '../widgets/lily_pad.dart';
-import '../widgets/mammal_media_viewer.dart'; 
+
 
 class WhaleVerticalTimelineScreen extends StatelessWidget {
   final WhaleData data;
@@ -94,7 +94,7 @@ class WhaleVerticalTimelineScreen extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(child: Image.asset(_backgroundPath, fit: BoxFit.cover)),
-          Positioned.fill(child: Container(color: _background.withOpacity(0.85))),
+          Positioned.fill(child: Container(color: _background.withValues(alpha:0.85))),
           SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               vertical: 24,
@@ -110,7 +110,7 @@ class WhaleVerticalTimelineScreen extends StatelessWidget {
                       child: CustomPaint(
                         painter: _TimelineLinePainter(
                           points: points,
-                          lineColor: _textColor.withOpacity(0.3),
+                          lineColor: _textColor.withValues(alpha:0.3),
                         ),
                       ),
                     ),
@@ -163,7 +163,7 @@ class WhaleVerticalTimelineScreen extends StatelessWidget {
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: isUnlocked ? _textColor : _textColor.withOpacity(0.5),
+        color: isUnlocked ? _textColor : _textColor.withValues(alpha:0.5),
       ),
     );
 
@@ -175,7 +175,7 @@ class WhaleVerticalTimelineScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 9,
               height: 1.25,
-              color: _textColor.withOpacity(0.7),
+              color: _textColor.withValues(alpha:0.7),
             ),
           )
         : const SizedBox.shrink();
@@ -329,7 +329,6 @@ class _AnimatedNodeState extends State<_AnimatedNode>
   @override
   Widget build(BuildContext context) {
     final p = widget.point;
-    final radius = p.size / 2;
 
     return AnimatedBuilder(
       animation: Listenable.merge([_appearAnim, _tapCtrl, _pulseAnim]),
@@ -365,7 +364,7 @@ class _AnimatedNodeState extends State<_AnimatedNode>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: widget.textColor.withOpacity(
+                          color: widget.textColor.withValues(alpha:
                             _tapCtrl.isAnimating 
                                 ? _rippleOpacityAnim.value 
                                 : 0.0, // 🔹 Скрываем, когда не анимируем

@@ -94,9 +94,8 @@ class _EvolutionRouteScreenState<T> extends State<EvolutionRouteScreen<T>> {
   bool _hasReachedFinal = false;
   bool _showFinalConfetti = false;
 
-  // ============================
+
   // ПРОГРЕСС ПОЛЬЗОВАТЕЛЯ
-  // ============================
   int _userSteps = 0;
   T? _selectedNode;
   RouteStateRepository? _routeRepo;
@@ -107,11 +106,10 @@ class _EvolutionRouteScreenState<T> extends State<EvolutionRouteScreen<T>> {
   // ============================
   Timer? _updateTimer;
   bool _isUpdating = false;
-  static const Duration _updateInterval = Duration(seconds: 8);
+  static const Duration _updateInterval = Duration(milliseconds: 300);
 
-  // ============================
+ 
   // ЖИЗНЕННЫЙ ЦИКЛ
-  // ============================
   @override
   void initState() {
     super.initState();
@@ -570,7 +568,7 @@ class _EvolutionRouteScreenState<T> extends State<EvolutionRouteScreen<T>> {
               Container(
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.9),
+                  color: Colors.green.withValues(alpha:0.9),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(

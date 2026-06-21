@@ -149,7 +149,7 @@ class _LilyPadState extends State<LilyPad>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: LilyPad.flower.withOpacity(0.3),
+                          color: LilyPad.flower.withValues(alpha:0.3),
                           blurRadius: 12,
                           spreadRadius: 2,
                         ),
@@ -191,12 +191,12 @@ class _LilyPadPainter extends CustomPainter {
     final radius = size.width / 2 * 0.92;
 
     final leafColor = _getLeafColor();
-    final veinColor = LilyPad.veinColor.withOpacity(
+    final veinColor = LilyPad.veinColor.withValues(alpha:
       isUnlocked ? 0.6 : 0.8,
     );
     final outlineColor = isCurrent
-        ? LilyPad.flower.withOpacity(0.9)
-        : leafColor.withOpacity(0.4);
+        ? LilyPad.flower.withValues(alpha:0.9)
+        : leafColor.withValues(alpha:0.4);
 
     final leafPaint = Paint()
       ..color = leafColor

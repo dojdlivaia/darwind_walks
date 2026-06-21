@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Пол
               DropdownButtonFormField<String>(
-                value: _selectedGender,
+                initialValue: _selectedGender,
                 items: const [
                   DropdownMenuItem(value: 'male', child: Text('Мужской')),
                   DropdownMenuItem(value: 'female', child: Text('Женский')),

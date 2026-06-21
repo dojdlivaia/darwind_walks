@@ -8,12 +8,12 @@ class WhaleProgressBar extends StatefulWidget {
   final Function(WhaleNode) onNodeSelected;
 
   const WhaleProgressBar({
-    Key? key,
+    super.key,
     required this.currentSteps,
     required this.totalSteps,
     required this.nodes,
     required this.onNodeSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<WhaleProgressBar> createState() => _WhaleProgressBarState();
@@ -139,7 +139,7 @@ class _WhaleProgressBarState extends State<WhaleProgressBar> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

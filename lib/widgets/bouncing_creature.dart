@@ -24,12 +24,37 @@ class BouncingCreature extends StatefulWidget {
 class _BouncingCreatureState extends State<BouncingCreature>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  
+  // ✅ Реальное соотношение сторон загруженного изображения
+  double? _imageAspectRatio;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+    
+    // ✅ Пытаемся извлечь размеры из Image.asset
+    _extractImageSize();
+  }
+
+  void _extractImageSize() {
+    if (widget.child is Image) {
+      final image = widget.child as Image;
+      final key = image.image;
+      
+      // Создаем временный ImageStream для получения размеров без отображения
+      final stream = key.resolve(ImageConfiguration.empty);
+      stream.addListener(
+        ImageStreamListener((info, _) {
+          if (mounted && info.image.width > 0) {
+            setState(() {
+              _imageAspectRatio = info.image.width / info.image.height;
+            });
+          }
+        }),
+      );
+    }
   }
 
   @override
@@ -44,26 +69,18 @@ class _BouncingCreatureState extends State<BouncingCreature>
       animation: _controller,
       builder: (context, child) {
         final t = _controller.value * 2 * math.pi;
-        // dy: отрицательное значение = вверх (стандартная система координат для прыжка)
-        // Но в Flutter Y растёт вниз, поэтому для прыжка ВВЕРХ нужно вычитать.
-        // sin(t) даёт -1..1. Умножаем на -amplitude чтобы -1 было внизу, +1 вверху? 
-        // Нет, проще: пусть dy = -sin(t) * amplitude. Тогда при t=pi/2 dy=-amp (вверх).
-        final dy = -math.sin(t) * widget.amplitude; 
-        
-        // normalizedHeight: 0.0 (на полу) -> 1.0 (в пике прыжка)
-        // Когда sin(t)=1 (пик), dy = -amplitude. normalizedHeight должен быть 1.
-        // Когда sin(t)=-1 (низ), dy = +amplitude... Стоп.
-        // Давайте упростим: sin(t) колеблется -1..1.
-        // Пусть "пол" это sin(t) = -1. "Пик" это sin(t) = 1.
         final rawSin = math.sin(t);
-        final normalizedHeight = (rawSin + 1) / 2; // 0 (низ) -> 1 (верх)
+        // normalizedHeight: 0.0 (на полу) -> 1.0 (в пике)
+        final normalizedHeight = (rawSin + 1) / 2;
 
-        // ✅ ПАРАМЕТРЫ ТЕНИ (зависят от высоты, но позиция НЕ зависит)
-        // Низко (0): большая, тёмная, чёткая
-        // Высоко (1): маленькая, прозрачная, размытая
-        final shadowScale = 1.0 - (normalizedHeight * 0.4);   // 1.0 -> 0.6
-        final shadowOpacity = 0.5 - (normalizedHeight * 0.35); // 0.5 -> 0.15
-        final shadowBlur = 8.0 + (normalizedHeight * 24.0);    // 8 -> 32
+        // Параметры тени реагируют на высоту прыжка
+        final shadowScaleY = 0.12; // Фиксированная плоскость
+        final shadowOpacity = 0.5 - (normalizedHeight * 0.35);
+        final shadowBlur = 8.0 + (normalizedHeight * 24.0);
+        
+        // ✅ Масштаб по X зависит от высоты: когда высоко - тень уже
+        // Но базовая ширина берется от РЕАЛЬНОГО размера картинки (ниже)
+        final shadowScaleXAnim = 1.0 - (normalizedHeight * 0.3);
 
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -71,41 +88,57 @@ class _BouncingCreatureState extends State<BouncingCreature>
                 ? constraints.maxWidth
                 : MediaQuery.of(context).size.width;
 
-            final creatureWidth = maxWidth * 0.9;
-            final creatureHeight = creatureWidth * 0.85;
+            // Размеры контейнера для картинки
+            final containerWidth = maxWidth * 0.9;
+            final containerHeight = containerWidth * 0.85;
 
-            // ✅ КЛЮЧЕВОЕ ИЗМЕНЕНИЕ:
-            // Весь контейнер прижат к низу родителя через Align.
-            // Внутри Stack: тень НЕПОДВИЖНА на дне, картинка прыгает ОТ дна.
+            // ✅ ВЫЧИСЛЕНИЕ РЕАЛЬНОЙ ШИРИНЫ КАРТИНКИ
+            // Если aspectRatio известен, считаем точно. Иначе fallback на containerWidth
+            double actualImageWidth = containerWidth;
+            
+            if (_imageAspectRatio != null) {
+              final imgAR = _imageAspectRatio!;
+              final containerAR = containerWidth / containerHeight;
+              
+              if (imgAR > containerAR) {
+                // Горизонтальная картинка (крокодил): упирается в ширину
+                actualImageWidth = containerWidth;
+              } else {
+                // Вертикальная картинка (человек): упирается в высоту
+                actualImageWidth = containerHeight * imgAR;
+              }
+            }
+
+            // Ширина тени = реальная ширина картинки * анимационное сжатие
+            final shadowWidth = actualImageWidth * shadowScaleXAnim;
+
             return Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(
-                width: creatureWidth,
-                // Высота = размер зверя + запас на прыжок + зона тени
-                height: creatureHeight + widget.amplitude * 2 + widget.shadowOffset,
+                width: containerWidth,
+                height: containerHeight + widget.amplitude * 2 + widget.shadowOffset,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    // 1. ТЕНЬ — НЕПОДВИЖНА, всегда на дне Stack
-                    // Рисуется ПЕРВОЙ = ЗА картинкой
+                    // 1. ТЕНЬ — НЕПОДВИЖНА, ширина = реальной ширине спрайта
                     if (widget.showShadow)
                       Positioned(
-                        bottom: 0, // ✅ Всегда на самом дне!
+                        bottom: 0,
                         left: 0,
                         right: 0,
                         child: Center(
                           child: Transform.scale(
-                            scaleX: shadowScale,
-                            scaleY: 0.12, // Плоский эллипс
+                            scaleX: 1.8, // Масштаб уже учтен в shadowWidth
+                            scaleY: shadowScaleY,
                             child: Container(
-                              width: creatureWidth,
-                              height: creatureWidth * 0.3,
+                              width: shadowWidth,
+                              height: shadowWidth * 0.3,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.transparent,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(
+                                    color: Colors.black.withValues(alpha:
                                       shadowOpacity.clamp(0.0, 1.0),
                                     ),
                                     blurRadius: shadowBlur,
@@ -118,18 +151,15 @@ class _BouncingCreatureState extends State<BouncingCreature>
                         ),
                       ),
 
-                    // 2. КАРТИНКА — прыгает ОТ дна Stack
-                    // Рисуется ВТОРОЙ = ПЕРЕД тенью
-                    // bottom = shadowOffset + смещение прыжка
-                    // Когда normalizedHeight=0 (низ): bottom = shadowOffset (стоит над тенью)
-                    // Когда normalizedHeight=1 (верх): bottom = shadowOffset + amplitude*2
+                    // 2. КАРТИНКА — прыгает, размер контейнера фиксирован
+                    // FittedBox внутри сам масштабирует картинку по BoxFit.contain
                     Positioned(
                       bottom: widget.shadowOffset + (normalizedHeight * widget.amplitude * 2),
                       left: 0,
                       right: 0,
                       child: SizedBox(
-                        width: creatureWidth,
-                        height: creatureHeight,
+                        width: containerWidth,
+                        height: containerHeight,
                         child: FittedBox(
                           fit: BoxFit.contain,
                           child: child!,

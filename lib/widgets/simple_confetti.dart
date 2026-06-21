@@ -147,7 +147,7 @@ class _ConfettiPainter extends CustomPainter {
 
       final fade = (1 - localT).clamp(0.0, 1.0);
       final paint = Paint()
-        ..color = p.color.withOpacity(fade)
+        ..color = p.color.withValues(alpha:fade)
         ..style = PaintingStyle.fill;
 
       final angle = p.angle + p.angularVelocity * t;

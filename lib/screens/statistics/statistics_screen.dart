@@ -1,7 +1,7 @@
 // lib/screens/statistics/statistics_screen.dart
 
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+
 
 import '../../data/daily_steps_repository.dart';
 import 'stat_range.dart';
@@ -41,10 +41,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   static const Color _secondaryDark = Color(0xFF2E3A05);
   static const Color _textWhite = Colors.white;
 
-  static const Color _colorPast = Color(0xFF4B5E09);
-  static const Color _colorToday = Color(0xFF7FB83E);
-  static const Color _colorFuture = Color(0xFF1A2A0A);
-  static const Color _colorStump = Color(0xFF0F1A05);
+
 
   @override
   void initState() {
@@ -323,7 +320,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _range == StatsRange.custom ? _primaryGreen : _accentLight.withOpacity(0.2),
+                    color: _range == StatsRange.custom ? _primaryGreen : _accentLight.withValues(alpha:0.2),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: _range == StatsRange.custom ? _accentLight : _primaryGreen,
@@ -381,7 +378,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
           color: isSelected ? _primaryGreen : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? _accentLight : _accentLight.withOpacity(0.4),
+            color: isSelected ? _accentLight : _accentLight.withValues(alpha:0.4),
             width: 1.5,
           ),
         ),
@@ -410,7 +407,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
           const SizedBox(width: 10),
           _expandedSummaryCard('В день', summary.averagePerDay.toStringAsFixed(0), _secondaryDark),
           const SizedBox(width: 10),
-          _expandedSummaryCard('Рекорд', '${summary.bestDaySteps}\n$bestDayStr', _accentLight.withOpacity(0.3)),
+          _expandedSummaryCard('Рекорд', '${summary.bestDaySteps}\n$bestDayStr', _accentLight.withValues(alpha:0.3)),
         ],
       ),
     );
@@ -421,9 +418,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
-          color: accentColor.withOpacity(0.2),
+          color: accentColor.withValues(alpha:0.2),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: accentColor.withOpacity(0.6), width: 1),
+          border: Border.all(color: accentColor.withValues(alpha:0.6), width: 1),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -507,7 +504,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: _points.length,
-        separatorBuilder: (_, __) => Divider(color: _accentLight.withOpacity(0.1), height: 1),
+        separatorBuilder: (_, _) => Divider(color: _accentLight.withValues(alpha:0.1), height: 1),
         itemBuilder: (context, index) {
           final p = _points[index];
           final dayName = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][p.date.weekday - 1];
@@ -547,9 +544,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: _accentLight.withOpacity(0.15),
+                color: _accentLight.withValues(alpha:0.15),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _accentLight.withOpacity(0.3)),
+                border: Border.all(color: _accentLight.withValues(alpha:0.3)),
               ),
               child: Text(
                 '${p.totalSteps}',
