@@ -128,7 +128,7 @@ class _BouncingCreatureState extends State<BouncingCreature>
                         right: 0,
                         child: Center(
                           child: Transform.scale(
-                            scaleX: 1.8, // Масштаб уже учтен в shadowWidth
+                            scaleX: 2.3, // Масштаб уже учтен в shadowWidth
                             scaleY: shadowScaleY,
                             child: Container(
                               width: shadowWidth,

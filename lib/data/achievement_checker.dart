@@ -19,175 +19,173 @@ class AchievementChecker {
     required bool isFirstLaunchToday,
     required DateTime now,
     required Map<String, int> routeCompletionDays,
+    required List<Achievement> allAchievements,  // ✅ добавить список всех достижений
   }) {
     final newlyUnlocked = <Achievement>[];
     
     // ============ ШАГИ ============
-    
-    // Первые шаги (100)
-    if (totalSteps >= 100) {
-      newlyUnlocked.add(_getAchievementById('first_steps'));
-    }
-    
     // Ходок (5 000)
     if (totalSteps >= 5000) {
-      newlyUnlocked.add(_getAchievementById('walker'));
+      final achievement = _getAchievementById('walker', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Путешественник (20 000)
     if (totalSteps >= 20000) {
-      newlyUnlocked.add(_getAchievementById('traveler'));
-    }
-    
-    // Исследователь миров (50 000)
-    if (totalSteps >= 50000) {
-      newlyUnlocked.add(_getAchievementById('world_explorer'));
-    }
-    
-    // Легенда эволюции (100 000)
-    if (totalSteps >= 100000) {
-      newlyUnlocked.add(_getAchievementById('evolution_legend'));
+      final achievement = _getAchievementById('traveler', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Марафонец (42 000)
     if (totalSteps >= 42000) {
-      newlyUnlocked.add(_getAchievementById('marathon_total'));
+      final achievement = _getAchievementById('marathon_total', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
+    }
+    
+    // Исследователь миров (50 000)
+    if (totalSteps >= 50000) {
+      final achievement = _getAchievementById('world_explorer', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
+    }
+    
+    // Легенда эволюции (100 000)
+    if (totalSteps >= 100000) {
+      final achievement = _getAchievementById('evolution_legend', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
+    }
+    
+    // Первые шаги (100)
+    if (totalSteps >= 100) {
+      final achievement = _getAchievementById('first_steps', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // ============ ЕЖЕДНЕВНЫЕ ШАГИ ============
-    
     // Дневной странник (5 000 за день)
     if (dailySteps >= 5000) {
-      newlyUnlocked.add(_getAchievementById('day_wanderer'));
+      final achievement = _getAchievementById('day_wanderer', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Марафонец дня (10 000 за день)
     if (dailySteps >= 10000) {
-      newlyUnlocked.add(_getAchievementById('day_marathoner'));
+      final achievement = _getAchievementById('day_marathoner', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Ранняя пташка (3 000 до 12:00)
     if (morningSteps >= 3000) {
-      newlyUnlocked.add(_getAchievementById('early_bird'));
+      final achievement = _getAchievementById('early_bird', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Ночной ходок (1 000 после 22:00)
     if (nightSteps >= 1000) {
-      newlyUnlocked.add(_getAchievementById('night_walker'));
+      final achievement = _getAchievementById('night_walker', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // ============ МАРШРУТЫ ============
-    
     // Первое путешествие
     if (completedRoutes >= 1) {
-      newlyUnlocked.add(_getAchievementById('first_journey'));
+      final achievement = _getAchievementById('first_journey', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Опытный путешественник (3 маршрута)
     if (completedRoutes >= 3) {
-      newlyUnlocked.add(_getAchievementById('experienced_traveler'));
+      final achievement = _getAchievementById('experienced_traveler', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Специфичные маршруты
     if (completedRouteIds.contains('jurassic')) {
-      newlyUnlocked.add(_getAchievementById('paleontologist'));
+      final achievement = _getAchievementById('paleontologist', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     if (completedRouteIds.contains('whale')) {
-      newlyUnlocked.add(_getAchievementById('oceanographer'));
+      final achievement = _getAchievementById('oceanographer', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     if (completedRouteIds.contains('cenozoic')) {
-      newlyUnlocked.add(_getAchievementById('ornithologist'));
+      final achievement = _getAchievementById('ornithologist', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
+    }
+    if (completedRouteIds.contains('mammals')) {
+      final achievement = _getAchievementById('zoologist', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Скоростной эволюционер (маршрут за 7 дней)
     for (final entry in routeCompletionDays.entries) {
       if (entry.value <= 7) {
-        newlyUnlocked.add(_getAchievementById('speed_evolution'));
+        final achievement = _getAchievementById('speed_evolution', allAchievements);
+        if (achievement != null) newlyUnlocked.add(achievement);
         break;
       }
     }
     
     // ============ РЕГУЛЯРНОСТЬ ============
-    
     // Первый день
     if (isFirstLaunchToday) {
-      newlyUnlocked.add(_getAchievementById('first_day'));
+      final achievement = _getAchievementById('first_day', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Недельный исследователь (7 дней подряд)
     if (consecutiveDays >= 7) {
-      newlyUnlocked.add(_getAchievementById('weekly_researcher'));
+      final achievement = _getAchievementById('weekly_researcher', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Преданный палеонтолог (14 дней подряд)
     if (consecutiveDays >= 14) {
-      newlyUnlocked.add(_getAchievementById('loyal_paleontologist'));
+      final achievement = _getAchievementById('loyal_paleontologist', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Эволюция привычки (30 дней подряд)
     if (consecutiveDays >= 30) {
-      newlyUnlocked.add(_getAchievementById('habit_evolution'));
+      final achievement = _getAchievementById('habit_evolution', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Легендарный странник (90 дней подряд)
     if (consecutiveDays >= 90) {
-      newlyUnlocked.add(_getAchievementById('legendary_traveler'));
+      final achievement = _getAchievementById('legendary_traveler', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Идеальная неделя (5 000+ шагов каждый день недели)
-    if (weeklySteps >= 35000) { // 7 дней * 5000
-      newlyUnlocked.add(_getAchievementById('perfect_week'));
+    if (weeklySteps >= 35000) {
+      final achievement = _getAchievementById('perfect_week', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // ============ ИССЛЕДОВАНИЕ ============
-    
     // Любопытный (5 существ)
     if (creaturesOpened >= 5) {
-      newlyUnlocked.add(_getAchievementById('curious'));
+      final achievement = _getAchievementById('curious', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // Исследователь (10 существ)
     if (creaturesOpened >= 10) {
-      newlyUnlocked.add(_getAchievementById('researcher'));
-    }
-    
-    // ============ СЕЗОННЫЕ ============
-    
-    // Проверка сезонов
-    final month = now.month;
-    if (month == 1) { // январь
-      newlyUnlocked.add(_getAchievementById('new_year_start'));
-    }
-    
-    // Весна (март, апрель, май)
-    if (month >= 3 && month <= 5 && totalSteps >= 10000) {
-      newlyUnlocked.add(_getAchievementById('spring_traveler'));
+      final achievement = _getAchievementById('researcher', allAchievements);
+      if (achievement != null) newlyUnlocked.add(achievement);
     }
     
     // ============ УДАЛЯЕМ ДУБЛИКАТЫ ============
-    
     return newlyUnlocked.toSet().toList();
   }
   
-  /// Вспомогательный метод для получения достижения по ID
-  static Achievement _getAchievementById(String id) {
-    // Этот метод будет использовать AchievementRepository
-    // Но для простоты пока возвращаем заглушку
-    // В реальности нужно получать из репозитория
-    return Achievement(
-      id: id,
-      title: '',
-      description: '',
-      category: AchievementCategory.steps,
-      tier: AchievementTier.bronze,
-      iconPath: '',
-      condition: const AchievementCondition(
-        type: ConditionType.totalSteps,
-        value: 0,
-      ),
-      isSecret: false,
-      xpReward: 0,
-    );
+  /// Получение достижения по ID из списка
+  static Achievement? _getAchievementById(String id, List<Achievement> allAchievements) {
+    try {
+      return allAchievements.firstWhere((a) => a.id == id);
+    } catch (_) {
+      return null;
+    }
   }
   
   /// Проверка конкретного типа условия

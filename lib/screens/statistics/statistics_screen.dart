@@ -185,9 +185,10 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       );
     }
 
+    // ✅ Защита от отрицательных значений
     final total = points.fold<int>(0, (sum, p) => sum + p.totalSteps);
     final best = points.reduce((a, b) => a.totalSteps >= b.totalSteps ? a : b);
-    final avg = total / points.length;
+    final avg = points.isNotEmpty ? total / points.length : 0.0; 
 
     return PeriodSummary(
       totalSteps: total,
@@ -398,7 +399,25 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     final bestDayStr = summary.bestDayDate != null
         ? '${summary.bestDayDate!.day}.${summary.bestDayDate!.month}'
         : '–';
+    if (_range == StatsRange.day) {
+      // Находим самый результативный час
+      String bestHourStr = '—';
+      if (_points.isNotEmpty) {
+        final bestHour = _points.reduce((a, b) => a.totalSteps >= b.totalSteps ? a : b);
+        bestHourStr = '${bestHour.date.hour}:00\n (${bestHour.totalSteps} шагов)';
+      }
 
+      return Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            _expandedSummaryCard('Всего', summary.totalSteps.toString(), _primaryGreen),
+            const SizedBox(width: 10),
+            _expandedSummaryCard('Рекордный час', bestHourStr, _accentLight.withValues(alpha:0.3)),
+          ],
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Row(

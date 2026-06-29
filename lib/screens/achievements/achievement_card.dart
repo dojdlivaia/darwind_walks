@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import '../../models/achievement.dart';
-
+import '../../widgets/asset_image_or_icon.dart';
 
 class AchievementCard extends StatelessWidget {
   final UserAchievement userAchievement;
@@ -41,27 +41,31 @@ class AchievementCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Иконка
+            // ✅ Изображение с проверкой наличия файла
             Container(
-              width: 55,
-              height: 55,
+              width: 70,
+              height: 70,
               decoration: BoxDecoration(
-                color: isUnlocked 
-                    ? tierColor.withValues(alpha: 0.15)
-                    : Colors.grey[200],
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(35),
               ),
-              child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(35),
                 child: isUnlocked
-                    ? Icon(
-                        _getIconForCategory(achievement.category),
-                        size: 28,
-                        color: tierColor,
+                    ? AssetImageOrIcon(
+                        assetPath: achievement.iconPath,
+                        fallbackIcon: _getIconForCategory(achievement.category),
+                        iconColor: tierColor,
+                        iconSize: 32,
+                        imageWidth: 70,
+                        imageHeight: 70,
                       )
-                    : Icon(
-                        Icons.lock_outline,
-                        size: 24,
-                        color: Colors.grey[400],
+                    : Container(
+                        color: Colors.grey[200],
+                        child: Icon(
+                          Icons.lock_outline,
+                          size: 28,
+                          color: Colors.grey[400],
+                        ),
                       ),
               ),
             ),
@@ -72,7 +76,7 @@ class AchievementCard extends StatelessWidget {
               achievement.title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isUnlocked ? Colors.black87 : Colors.grey[500],
               ),
@@ -84,22 +88,22 @@ class AchievementCard extends StatelessWidget {
             if (!isUnlocked && achievement.isNumericCondition) ...[
               const SizedBox(height: 6),
               LinearProgressIndicator(
-                value: userAchievement.progressPercent,
+                value: userAchievement.progressPercent.clamp(0.0, 1.0),
                 backgroundColor: Colors.grey[200],
                 valueColor: AlwaysStoppedAnimation<Color>(tierColor),
                 borderRadius: BorderRadius.circular(4),
-                minHeight: 3,
+                minHeight: 4,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 userAchievement.progressText,
-                style: TextStyle(fontSize: 9, color: Colors.grey[500]),
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
               ),
             ],
             
             if (isUnlocked) ...[
               const SizedBox(height: 6),
-              const Icon(Icons.check_circle, size: 12, color: Colors.green),
+              const Icon(Icons.check_circle, size: 14, color: Colors.green),
             ],
           ],
         ),

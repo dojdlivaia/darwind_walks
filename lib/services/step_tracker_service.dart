@@ -183,7 +183,7 @@ class StepTrackerService {
       debugPrint('🏆 Checking achievements...');
       
       // Получаем общее количество шагов
-      final totalSteps = await _repository.getTotalStepsForRoute('jurassic');
+      final totalSteps = await _repository.getTotalStepsAllTime();
       
       // Получаем шаги за сегодня
       final today = DateTime.now();

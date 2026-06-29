@@ -27,18 +27,19 @@ class _BarChartState extends State<BarChart> {
 
   static const Color _colorPast = Color(0xFF4B5E09);
   static const Color _colorToday = Color(0xFF7FB83E);
-  static const Color _colorFuture = Color(0xFF1A2A0A);
   static const Color _colorStump = Color(0xFF0F1A05);
   static const Color _accentLight = Color(0xFFEEF8CC);
 
   @override
   void initState() {
     super.initState();
-    // Автоматически прокручиваем к релевантному времени после отрисовки
     if (widget.range == StatsRange.day && widget.points.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToRelevantTime();
-      });
+      final hasData = widget.points.any((p) => p.totalSteps > 0);
+      if (hasData) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToRelevantTime();
+        });
+      }
     }
   }
 
@@ -48,23 +49,19 @@ class _BarChartState extends State<BarChart> {
     super.dispose();
   }
 
-  // 🔍 Определяем целевой час для авто-прокрутки
   int _getTargetHour() {
     final now = DateTime.now().hour;
-    if (now < 8) return 0;      // Утро: начало с 00:00
-    if (now < 16) return 7;     // День: начало с 07:00
-    return 13;                  // Вечер: начало с 13:00
+    if (now < 8) return 0;
+    if (now < 16) return 7;
+    return 13;
   }
 
   void _scrollToRelevantTime() {
     if (!_scrollController.hasClients) return;
-
     final targetHour = _getTargetHour();
-    // Находим индекс целевого часа в списке точек (всегда 0..23)
     final index = widget.points.indexWhere((p) => p.date.hour == targetHour);
     if (index == -1) return;
 
-    // Размеры элементов: ширина 30 + отступы 2+2 = 34px. Padding слева = 16px.
     const itemWidth = 34.0;
     const padding = 16.0;
     final offset = (index * itemWidth) + padding;
@@ -78,13 +75,50 @@ class _BarChartState extends State<BarChart> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.points.isEmpty) return const SizedBox();
+    // ✅ Если нет точек — показываем заглушку
+    if (widget.points.isEmpty) {
+      return const Center(
+        child: Text(
+          'Нет данных',
+          style: TextStyle(color: _accentLight),
+        ),
+      );
+    }
 
-    final maxSteps = widget.points.map((p) => p.totalSteps).reduce(math.max).toDouble();
+    // ✅ Защита от пустых данных — вычисляем maxSteps
+    final maxSteps = widget.points
+        .map((p) => p.totalSteps)
+        .fold<int>(0, (max, value) => value > max ? value : max)
+        .toDouble();
+
+    // ✅ Если maxSteps == 0 — все столбцы нулевые
+    if (maxSteps <= 0) {
+      return const Center(
+        child: Text(
+          'Нет шагов в этом периоде',
+          style: TextStyle(color: _accentLight),
+        ),
+      );
+    }
+
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
 
-    // 📅 Вкладка "День": все 24 часа + авто-прокрутка к актуальному окну
+    // 📅 Вкладка "День"
     if (widget.range == StatsRange.day) {
+      final selectedDate = widget.points.isNotEmpty
+          ? DateTime(
+              widget.points.first.date.year,
+              widget.points.first.date.month,
+              widget.points.first.date.day,
+            )
+          : today;
+
+      final isToday = selectedDate.year == today.year &&
+          selectedDate.month == today.month &&
+          selectedDate.day == today.day;
+      final currentHour = isToday ? now.hour : 23;
+
       return SingleChildScrollView(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
@@ -95,7 +129,6 @@ class _BarChartState extends State<BarChart> {
             children: widget.points.asMap().entries.map((entry) {
               final point = entry.value;
               final pointHour = point.date.hour;
-              final currentHour = now.hour;
 
               Color barColor;
               double minHeight = 4.0;
@@ -109,10 +142,13 @@ class _BarChartState extends State<BarChart> {
                 minHeight = 2.0;
               }
 
-              final height = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0.0;
-              final calculatedHeight = height * 150.0;
+              // ✅ Высота столбца: от 0 до 150
+              final heightRatio = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0.0;
+              final calculatedHeight = heightRatio * 150.0;
               final barHeight = calculatedHeight < minHeight ? minHeight : calculatedHeight;
-              final finalHeight = widget.animateBars ? math.max(0.0, barHeight) : 0.0;
+              final finalHeight = widget.animateBars 
+                  ? barHeight.clamp(0.0, 150.0) 
+                  : 0.0;
 
               return Container(
                 width: 30,
@@ -147,6 +183,7 @@ class _BarChartState extends State<BarChart> {
       );
     }
 
+    // 📅 Вкладки "Неделя", "Месяц", "Диапазон"
     final screenWidth = MediaQuery.of(context).size.width;
     final barWidth = (screenWidth - 64) / widget.points.length - 4;
 
@@ -162,7 +199,6 @@ class _BarChartState extends State<BarChart> {
           double minHeight = 4.0;
 
           final pointDate = DateTime(point.date.year, point.date.month, point.date.day);
-          final today = DateTime(now.year, now.month, now.day);
 
           if (pointDate.isBefore(today)) {
             barColor = _colorPast;
@@ -173,10 +209,13 @@ class _BarChartState extends State<BarChart> {
             minHeight = 2.0;
           }
 
-          final height = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0.0;
-          final calculatedHeight = height * 100.0;
+          // ✅ Высота столбца: от 0 до 100
+          final heightRatio = maxSteps > 0 ? (point.totalSteps / maxSteps) : 0.0;
+          final calculatedHeight = heightRatio * 100.0;
           final barHeight = calculatedHeight < minHeight ? minHeight : calculatedHeight;
-          final finalHeight = widget.animateBars ? math.max(0.0, barHeight) : 0.0;
+          final finalHeight = widget.animateBars 
+              ? barHeight.clamp(0.0, 100.0) 
+              : 0.0;
           final dayLabel = '${point.date.day}.${point.date.month}';
 
           return Container(

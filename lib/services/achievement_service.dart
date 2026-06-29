@@ -21,6 +21,9 @@ class AchievementService {
     try {
       final repo = await AchievementRepository.getInstance();
       
+      // ✅ Получаем все достижения
+      final allAchievements = await repo.getAllAchievements();
+      
       final userAchievements = await repo.loadUserAchievements();
       
       final newlyUnlocked = AchievementChecker.check(
@@ -37,6 +40,7 @@ class AchievementService {
         isFirstLaunchToday: false,
         now: DateTime.now(),
         routeCompletionDays: {},
+        allAchievements: allAchievements,  // ✅ передаём список
       );
       
       for (final achievement in newlyUnlocked) {

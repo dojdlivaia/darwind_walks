@@ -255,6 +255,15 @@ class DailyStepsRepository {
     await db.delete(_table);
   }
 
-  // ❌ Удалить метод close() — БД должна жить всегда
-  // Future<void> close() async { ... }
+  Future<int> getTotalStepsAllTime() async {
+    final allStats = await getRange(
+      from: DateTime(2024, 1, 1),
+      to: DateTime.now(),
+    );
+    
+    return allStats.fold<int>(
+      0,
+      (sum, stat) => sum + stat.totalSteps,
+    );
+  }
 }
